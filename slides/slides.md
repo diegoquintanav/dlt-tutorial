@@ -48,9 +48,9 @@ marp: true
 - `dlt` breaks some of these principles in the documentation (seems to be a LLMWare trend tbh) -->
 - **In the face of ambiguity, refuse the temptation to guess**
   - Configuration are portrayed as strings (Seems to be in line with llmware trends)
-  - CLI does not help to reason about pipeline state. It needs some love, overall
+  - CLI does not help to reason about pipeline state. It _show_ things but it does not _explain_ them.
 - **There should be one-- and preferably only one --obvious way to do it**
-  - Docs don't seem to agree in how something can be done. Full imports and namespaces are missing, etc.
+  - Docs don't seem to agree in how something can be done: API style is different across examples, full imports and namespaces are missing, etc.
 
 ---
 
@@ -202,6 +202,21 @@ That's it! These are the building blocks for what we'll be covering next
 
 ---
 
+## What happens when `pipeline.run` is called?
+
+- Extract data
+  - Generates a `load package` with a unique `load_id` (`_dlt_load_id`) ([docs](https://dlthub.com/docs/general-usage/destination-tables#load-packages-and-load-ids))
+- Normalize
+  - Infers schema from data and evolves it if needed
+  - Unnest any nested structures
+  - Apply schema contracts if present
+- Load
+  - Runs schema migrations if needed
+  - Insert data according to the `write_disposition` and `write_strategy` (more on that later)
+  - Updates pipeline state and internal dlt tables
+
+---
+
 ## About the source
 
 it only needs to be a generator that yields dictionaries. For example, when working with dataframes,
@@ -215,6 +230,49 @@ def my_pandas_data_source():
 ```
 
 `dlt` works better if the generator yields dictionaries in batches, see <https://dlthub.com/docs/reference/performance#yield-pages-instead-of-rows>
+
+---
+
+## Nested fields
+
+`dlt` is able to serialize from _nested_ tables, and it will generate tables for each nested structure (see [docs](https://dlthub.com/docs/general-usage/destination-tables/#nested-tables)). For example:
+
+```python
+data = [
+    {
+        "id": 1,
+        "name": "Alice",
+        "pets": [
+            {"id": 1, "name": "Fluffy", "type": "cat"},
+            {"id": 2, "name": "Spot", "type": "dog"},
+        ],
+    },
+    {"id": 2, "name": "Bob", "pets": [{"id": 3, "name": "Fido", "type": "dog"}]},
+]
+```
+
+---
+
+Running a pipeline with `dataset_name='mydata'` and `table_name='users'` Will produce
+
+`mydata.users`
+
+```
+| id | name  |     _dlt_id     |   _dlt_load_id    |
+|----|-------|-----------------|-------------------|
+| 1  | Alice | wX3f5vn801W16A  | 1234562350.98417  |
+| 2  | Bob   | rX8ybgTeEmAmmA  | 1234562350.98417  |
+```
+
+`mydata.users__pets`
+
+```
+| id | name   | type |     _dlt_id      |   _dlt_parent_id   | _dlt_list_idx |
+|----|--------|------|------------------|--------------------|---------------|
+| 1  | Fluffy | cat  | w1n0PEDzuP3grw   | wX3f5vn801W16A     | 0             |
+| 2  | Spot   | dog  | 9uxh36VU9lqKpw   | wX3f5vn801W16A     | 1             |
+| 3  | Fido   | dog  | pe3FVtCWz8VuNA   | rX8ybgTeEmAmmA     | 0             |
+```
 
 ---
 
@@ -1265,7 +1323,7 @@ I did not open with this because it makes things complicated right away.
 
 ## Using the CLI
 
-`dlt` provides a CLI tool to manage pipelines
+`dlt` provides a CLI tool to manage pipelines, and a UI to navigate data visually. See more in the [docs](https://dlthub.com/docs/general-usage/dashboard)
 
 ```bash
 dlt pipeline --list # shows existing pipelines
@@ -1277,7 +1335,22 @@ You can query data and inspect the pipeline states, from a streamlit interface!
 
 ---
 
-# Advanced stuff
+## Tips and tricks and recommendations
+
+- Pass `PROGRESS=log|tqdm|enlighten python script.py` to change the progress bar style ([source](https://dlthub.com/docs/general-usage/pipeline#monitor-the-loading-progress))
+- Stick to one `pipeline.run` per script.
+- Use `dlt` for ELT, not for ETL. Transform data as close to the source as possible.
+- Send the output of `pipeline.run` to another call to `pipeline.run` to persist execution logs to the same target
+- Pass `dev_mode=True` to `dlt.pipeline` to experiment ([source](https://dlthub.com/docs/general-usage/pipeline#do-experiments-with-dev-mode))
+- Separate dev/prod environments using `pipelines_dir` ([source](https://dlthub.com/docs/general-usage/pipeline#separate-working-environments-with-pipelines_dir))
+- `dlt` supports parallel execution through `concurrent.futures` ([source](https://dlthub.com/docs/reference/performance#running-multiple-pipelines-in-parallel))
+- Send errors to sentry by setting `runtime.sentry_dsn="https:///<...>"` in `config.toml` ([source](https://dlthub.com/docs/running-in-production/tracing))
+
+---
+
+## Advanced stuff
+
+---
 
 ## inspecting dlt state
 
@@ -1299,15 +1372,95 @@ The [`state`](https://dlthub.com/docs/general-usage/state) is a dictionary creat
 
 And then running `14_sample_pipeline_debugging_state.py` should raise this error.
 
-At this point we are in a point where the faulty execution is in pending state. We can check this
+---
+
+## `dlt` internals
+
+every time a pipeline is run, `dlt`  will create or update
+
+1. Files in `~/.dlt/pipelines/<pipeline_name>/`
+2. In the target table: every row has a `_dlt_load_id`and a `_dlt_id`
+3. `dlt` creates three more tables that persist the state of the pipeline ([docs](https://dlthub.com/docs/general-usage/destination-tables#dlts-internal-tables))
+    1. `_dlt_loads`
+    2. `_dlt_pipeline_state`
+    3. `_dlt_version`
+
+---
+
+## `_dlt_loads` and `_dlt_load_id`
+
+In every table, `_dlt_load_id` is a reference to related load in `_dlt_loads` table
 
 ```bash
-$ dlt pipeline --list
-1 pipeline found in /home/diego/.dlt/pipelines
-sample_pipeline
+postgres=# select * from sample_data._dlt_loads order by inserted_at desc limit 5;
+      load_id       | schema_name | status |          inserted_at          |             schema_version_hash              
+--------------------+-------------+--------+-------------------------------+----------------------------------------------
+ 1757440438.5399692 | sample      |      0 | 2025-09-09 17:53:58.733743+00 | cZ8OQrQKft5FGQB62cV3gmpFng1wBUK4sW/q0skFEtQ=
+ 1757440119.8848214 | sample      |      0 | 2025-09-09 17:48:41.095752+00 | NyiayaWGe3diqa2Za1rNh9FJ6yomB7l5qZ2Q4ElyBHo=
+ 1757439294.8177757 | sample      |      0 | 2025-09-09 17:34:54.943091+00 | YXohSbRKFxnKQhpoJtyYbZptbh3jj2A4HLmMtBR9J+k=
+ 1757439272.1402698 | sample      |      0 | 2025-09-09 17:34:32.274734+00 | YXohSbRKFxnKQhpoJtyYbZptbh3jj2A4HLmMtBR9J+k=
+ 1757439224.961723  | sample      |      0 | 2025-09-09 17:33:45.097805+00 | YXohSbRKFxnKQhpoJtyYbZptbh3jj2A4HLmMtBR9J+k=
 ```
 
+You can see what execution your data is from
+
+```sql
+select loads.* 
+from sample_data.samples as target 
+left join sample_data._dlt_loads as loads
+on target._dlt_load_id = loads.load_id;
 ```
+
+---
+
+## `_dlt_id`
+
+- When serializing source records, each record produces its own `_dlt_id`, which is a unique identifier for that record.
+- The `_dlt_id` column is generated using the destination's UUID function (it uses `sqlglot`, see [source](https://github.com/dlt-hub/dlt/blob/90819a96182e8d146adfd3985a2032376440c79e/dlt/normalize/items_normalizers.py#L128)), such as `generateUUIDv4()` in ClickHouse. For dialects without native UUID support:
+  - In **Redshift**, `_dlt_id` is generated using an `MD5` hash of the load ID and row number.
+  - In **SQLite**, `_dlt_id` is simulated using `lower(hex(randomblob(16)))`.
+
+---
+
+## `_dlt_pipeline_state`
+
+Created by DLT. Tracks pipeline states, allowing dlt to resume during incremental loads.
+
+---
+
+## `_dlt_version`
+
+Created by DLT. Tracks schema updates on its column `schema` and `version_hash`
+
+```sql
+select column_name from information_schema.columns
+where table_name = '_dlt_version' and table_schema = 'sample_data';
+```
+
+```bash
+  column_name   
+----------------
+ version
+ engine_version
+ inserted_at
+ schema_name
+ version_hash
+ schema
+```
+
+If you fetch from `_dlt_version.schema` you'll get a JSON that contains description for every table handled by `dlt`.
+
+---
+
+## `_dlt_load_id`
+
+Every row inserted in the target table has a `_dlt_load_id` and a `_dlt_id` column. The former identifies the pipeline run, whereas the latter identifies the row itself.
+
+---
+
+## Inspecting the pipeline state files
+
+```bash
 tree  ~/.dlt/pipelines/sample_pipeline/
 /home/diego/.dlt/pipelines/sample_pipeline/
 ├── load
