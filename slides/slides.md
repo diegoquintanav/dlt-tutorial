@@ -456,7 +456,7 @@ to send anything to this database, we need to modify our current pipeline as
 ```
 
 ---
-Running this will raise an exception though, because the postgres destination need some **credentials** to work. Fortunately, `dlt` will give you some pointers for what to do to fix it
+Running this will raise an exception though, because the postgres destination needs some **credentials** to work. Fortunately, `dlt` will give you some pointers for what to do to fix it
 
 ```python
 python 3_sample_pipeline_postgres_config.py 
