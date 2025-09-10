@@ -56,11 +56,12 @@ marp: true
 
 ## Simple example using `duckdb`
 
-- At its most basic form, `dlt` takes in a generator that produces dictionaries
+- At its most basic form, `dlt` takes in an iterable that produces dictionaries
 - And treats every dictionary as a row and inserts it into a `target`
 
 ```python
 from uuid import uuid4
+from typing import Generator
 import string
 
 def sample_data() -> Generator[dict, None, None]:
@@ -150,10 +151,10 @@ if __name__ == "__main__":
 
 after running this with `python 1_sample_pipeline_basic.py`, we should end up with a database called `sample_pipeline.duckdb`
 
-> [!warning] Beware that duckdb does not allow for concurrent access. If you try to run the pipeline while having a client connected to the database, the pipeline will fail.
+:warning: Beware that duckdb does not allow for concurrent access. If you try to run the pipeline while having a client connected to the database, the pipeline will fail.
 
 ```bash
-$ duckdb sample_pipeline.duckdb "select * from information_schema.tables"º
+$ duckdb sample_pipeline.duckdb "select * from information_schema.tables"
 ┌─────────────────┬──────────────┬─────────────────────┬────────────┬───┬──────────────────────┬────────────────────┬──────────┬───────────────┬───────────────┐
 │  table_catalog  │ table_schema │     table_name      │ table_type │ … │ user_defined_type_…  │ is_insertable_into │ is_typed │ commit_action │ TABLE_COMMENT │
 │     varchar     │   varchar    │       varchar       │  varchar   │   │       varchar        │      varchar       │ varchar  │    varchar    │    varchar    │
@@ -207,7 +208,8 @@ it only needs to be a generator that yields dictionaries. For example, when work
 
 ```python
 import pandas as pd
-df = pd.read_csv("your_custom_data.csv")
+def my_pandas_data_source():
+    df = pd.read_csv("your_custom_data.csv")
     for _, row in df.iterrows():
         yield row.to_dict()
 ```
@@ -216,7 +218,7 @@ df = pd.read_csv("your_custom_data.csv")
 
 ---
 
-## Things to do next
+## Where to go next?
 
 - [x] decorate data generator with `dlt.resource` and `dlt.source`
 - [x] implement configuration through files
@@ -224,6 +226,7 @@ df = pd.read_csv("your_custom_data.csv")
 - [x] transform before ingesting
 - [x] validate incoming data using hints or pydantic
 - [x] enforcing data contracts
+- [x] using `dlt init`
 - [x] exploring the pipeline state with the CLI and the UI
 
 ---
@@ -1257,6 +1260,20 @@ dlt init rest_api postgres
 :warning: Beware that the code generated is not always consistent! Check the generated code before running it.
 
 I did not open with this because it makes things complicated right away.
+
+---
+
+## Using the CLI
+
+`dlt` provides a CLI tool to manage pipelines
+
+```bash
+dlt pipeline --list # shows existing pipelines
+dlt pipeline <pipeline_name> show # shows pipeline details using streamlit
+dlt pipeline <pipeline_name> show --dashboard # shows pipeline dashboard using marimo
+```
+
+You can query data and inspect the pipeline states, from a streamlit interface!
 
 ---
 
