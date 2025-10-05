@@ -7,5 +7,5 @@
 help: ## Print this help
 	@grep -E '^[0-9a-zA-Z_\-\.]+:.*?## .*$$' Makefile | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-build_slides: ## Build slides PDF from markdown using Marp
-	@marp --pdf --allow-local-files slides.md -o slides.pdf
+build_slides_en: ## Build slides PDF from markdown using Marp, in english
+	@marp --pdf --allow-local-files EN_slides.md -o slides_en.pdf

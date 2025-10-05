@@ -31,7 +31,7 @@ marp: true
 
 ---
 
-![alt text](image-1.png)
+![alt text](img/reddit-dlt.png)
 
 ---
 
@@ -626,7 +626,7 @@ We can define the **write disposition** and the **write strategy** when **runnin
 
 `dlt` summarizes every use case with the following diagram:
 
-![alt text](image.png)
+![alt text](img/incremental-decision-tree.png)
 
 ---
 
