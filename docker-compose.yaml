@@ -14,9 +14,28 @@ services:
         aliases:
           - postgres
 
+  tutorial:
+    image: "ghcr.io/diegoquintanav/dlt-tutorial:${DOCKER_TAG-latest}"
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - uv_venv:/app/.venv
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    command: ["tail", "-f", "/dev/null"]
+    networks:
+      db_nw:
+
 networks:
   db_nw:
     driver: bridge
 
 volumes:
   pgdata:
+    driver: local
+  uv_venv:
+    driver: local
