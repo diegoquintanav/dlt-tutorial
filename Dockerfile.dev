@@ -1,0 +1,70 @@
+# ---------------------------------------------------------------------------- #
+#                            global build arguments                            #
+# ---------------------------------------------------------------------------- #
+
+ARG PYTHON_VERSION=3.12.3
+ARG UV_VERSION=0.7.3
+
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
+
+FROM python:${PYTHON_VERSION}-slim
+
+
+
+# Global ARG, available to all stages (if renewed)
+ARG WORKDIR="/app"
+ARG PROJECT_DIRNAME="dlt_tutorial"
+
+# global username
+ARG USERNAME=pythonchile
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# python settings
+ARG PYTHON_VERSION
+ARG UV_VERSION
+ENV UV_VERSION=${UV_VERSION}
+
+# https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+COPY --from=uv /uv /uvx /bin/
+
+# ---------------------------- prepare the environment --------------------------- #
+# prepare the $PATH
+ENV PATH=${WORKDIR}/.venv/bin:$PATH \
+  PYTHONPATH=${WORKDIR} \
+  # Don't buffer `stdout`
+  PYTHONUNBUFFERED=1 \
+  # Don't create `.pyc` files:
+  PYTHONDONTWRITEBYTECODE=1
+
+# ------------------------------ add user ----------------------------- #
+
+RUN groupadd --gid ${USER_GID} "${USERNAME}" && \
+  useradd --uid ${USER_UID} --gid ${USER_GID} -m "${USERNAME}"
+
+# ---------------------------- add code specifics ---------------------------- #
+
+# Copy everything to the container, we filter out what we don't need using .dockerignore
+WORKDIR ${WORKDIR}
+
+# make sure the user owns /myproject
+RUN chown -R ${USER_UID}:${USER_GID} ${WORKDIR}
+
+# Copy only the files needed for installing dependencies
+COPY --chown=${USER_UID}:${USER_GID} pyproject.toml uv.lock ${WORKDIR}/
+
+# --------------------------- continue as username --------------------------- #
+USER ${USERNAME}
+
+# Sync the project into a new environment, asserting the lockfile is up to date
+# no install project yet, as we haven't copied the code
+RUN uv sync --locked --no-install-project
+
+# copy the rest of the code
+COPY --chown=${USER_UID}:${USER_GID} ${PROJECT_DIRNAME} ${WORKDIR}/${PROJECT_DIRNAME}
+
+# install project, now that the code is copied
+RUN uv sync --locked
+
+WORKDIR ${WORKDIR}/${PROJECT_DIRNAME}
+
