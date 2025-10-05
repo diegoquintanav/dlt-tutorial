@@ -1,11 +1,12 @@
 [project]
 name = "dlt-tutorial"
 version = "0.1.0"
-description = "Add your description here"
+description = "A workshop to get you started with DLT"
 readme = "README.md"
 requires-python = ">=3.12.3"
 dependencies = [
   "dlt[duckdb,postgres,workspace]>=1.15.0",
+  "duckdb>=1.3.2",
   "enlighten>=1.14.1",
   "ipykernel>=6.30.1",
   "mypy>=1.17.1",
