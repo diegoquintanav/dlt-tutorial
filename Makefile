@@ -15,3 +15,6 @@ duckdb.query_sample: ## Run sample query against duckdb database
 
 postgres.query_sample: ## Run sample query against postgres database
 	@docker compose exec db psql -U postgres --pset expanded=auto -c "select * from sample_data.samples;"
+
+postgres.psql: ## Run sample query against postgres database
+	@docker compose exec db psql -U postgres --pset expanded=auto
