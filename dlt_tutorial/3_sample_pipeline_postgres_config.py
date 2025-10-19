@@ -43,7 +43,7 @@ def sample_source(my_custom_parameter: str = "foo"):
 
 if __name__ == "__main__":
     pipeline = dlt.pipeline(
-        pipeline_name="sample_pipeline",
+        pipeline_name="sample_pipeline_postgres",
         destination=dlt.destinations.postgres,
         dataset_name="sample_data",
     )
