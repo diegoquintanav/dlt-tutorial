@@ -1,6 +1,8 @@
 .DEFAULT_GOAL := help
 .PHONY: help
 
+mkdocs_compose_file := docker-compose.mkdocs.yml
+main_compose_file := docker-compose.yml
 
 # taken from https://container-solutions.com/tagging-docker-images-the-right-way/
 
@@ -14,7 +16,17 @@ duckdb.query_sample: ## Run sample query against duckdb database
 	@duckdb sample_pipeline.duckdb -c "select * from sample_data.samples;"
 
 postgres.query_sample: ## Run sample query against postgres database
-	@docker compose exec db psql -U postgres --pset expanded=auto -c "select * from sample_data.samples;"
+	@docker compose -f $(main_compose_file) exec db psql -U postgres --pset expanded=auto -c "select * from sample_data.samples;"
 
 postgres.psql: ## Run sample query against postgres database
-	@docker compose exec db psql -U postgres --pset expanded=auto
+	@docker compose -f $(main_compose_file) exec db psql -U postgres --pset expanded=auto
+
+mkdocs.serve.docker: ## serve the mkdocs documentation
+	@docker compose -f $(mkdocs_compose_file) up
+
+mkdocs.logs.docker: ## show the logs of the mkdocs container
+	@docker compose -f $(mkdocs_compose_file) logs -ft mkdocs
+
+mkdocs.requirements.txt: ## update requirements.txt file from pyproject.toml
+	@poetry export -f requirements.txt --only mkdocs --without-hashes > poetry-mkdocs-requirements.txt
+	@echo "poetry-mkdocs-requirements.txt file updated"

@@ -1,0 +1,17 @@
+---
+version: "3.7"
+
+services:
+  mkdocs:
+    image: "ghcr.io/diegoquintanav/dlt-tutorial-mkdocs:${DOCKER_MKDOCS_TAG-latest}"
+    build:
+      context: .
+      dockerfile: Dockerfile.mkdocs
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./mkdocs.yml:/docs/mkdocs.yml
+      - ./docs:/docs/docs # needed for mkdocs serve
+      - ./README.md:/docs/README.md
+      - ./.git:/docs/.git:ro # needed for plugins
+
