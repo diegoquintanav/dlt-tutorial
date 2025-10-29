@@ -1,12 +1,13 @@
+import argparse
 import datetime as dt
 from pathlib import Path
 from typing import Generator
 
 import dlt
+from dlt.pipeline import TRefreshMode
 
 
-# --8<-- [start:sample_data]
-@dlt.resource
+@dlt.resource(primary_key="id")
 def sample_data() -> Generator[dict, None, None]:
     my_data = [
         {
@@ -36,33 +37,39 @@ def sample_data() -> Generator[dict, None, None]:
         yield item
 
 
-# --8<-- [end:sample_data]
-
-
-# --8<-- [start:sample_source]
 @dlt.source
-def sample_source():
+def sample_source(my_custom_parameter: str = "foo"):
+    print(f"Custom parameter value: {my_custom_parameter}")
     yield sample_data
 
 
-# --8<-- [end:sample_source]
+def parse_args():
+    parser = argparse.ArgumentParser(description="Sample DLT Pipeline with Append")
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Refresh the data in the destination (if applicable)",
+    )
+    return parser.parse_args()
+
 
 if __name__ == "__main__":
-    # --8<-- [start:pipeline]
+    args = parse_args()
+    should_refresh = args.refresh
     pipeline = dlt.pipeline(
-        pipeline_name="sample_pipeline",
-        destination=dlt.destinations.duckdb,
+        pipeline_name="sample_pipeline_postgres",
+        destination=dlt.destinations.postgres(create_indexes=True),
         dataset_name="sample_data",
     )
 
+    refresh_mode: TRefreshMode = "drop_sources"
     load_info = pipeline.run(
         sample_source,
         table_name="samples",
-        refresh="drop_sources",
+        refresh=refresh_mode if should_refresh else None,
         write_disposition={
-            "disposition": "replace",
+            "disposition": "append",
         },
     )
 
     print(load_info)
-    # --8<-- [end:pipeline]

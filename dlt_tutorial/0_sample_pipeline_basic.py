@@ -2,6 +2,7 @@ import datetime as dt
 from pathlib import Path
 import dlt
 
+# --8<-- [start:my_data]
 my_data = [
     {
         "id": 1,
@@ -26,9 +27,11 @@ my_data = [
         },
     },
 ]
+# --8<-- [end:my_data]
 
 
 if __name__ == "__main__":
+    # --8<-- [start:pipeline]
     pipeline = dlt.pipeline(
         pipeline_name="sample_pipeline",
         destination=dlt.destinations.duckdb,
@@ -44,5 +47,6 @@ if __name__ == "__main__":
             "disposition": "replace",
         },
     )
+    # --8<-- [end:pipeline]
 
     print("Done")

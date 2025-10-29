@@ -27,6 +27,10 @@ mkdocs.serve.docker: ## serve the mkdocs documentation
 mkdocs.logs.docker: ## show the logs of the mkdocs container
 	@docker compose -f $(mkdocs_compose_file) logs -ft mkdocs
 
-mkdocs.requirements.txt: ## update requirements.txt file from pyproject.toml
-	@poetry export -f requirements.txt --only mkdocs --without-hashes > poetry-mkdocs-requirements.txt
-	@echo "poetry-mkdocs-requirements.txt file updated"
+mkdocs.requirements.txt: ## update requirements.txt file from pyproject.toml (only mkdocs)
+	@uv export --format requirements.txt --group mkdocs > mkdocs-requirements.txt
+	@echo "mkdocs-requirements.txt file updated"
+
+tutorial.requirements.txt: ## update requirements.txt file from pyproject.toml (only tutorial)
+	@uv export --format requirements.txt > requirements.txt
+	@echo "requirements.txt file updated"

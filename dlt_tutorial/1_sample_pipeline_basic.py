@@ -5,6 +5,7 @@ from typing import Generator
 import dlt
 
 
+# --8<-- [start:sample_data]
 def sample_data() -> Generator[dict, None, None]:
     data = [
         {
@@ -34,7 +35,10 @@ def sample_data() -> Generator[dict, None, None]:
         yield item
 
 
+# --8<-- [end:sample_data]
+
 if __name__ == "__main__":
+    # --8<-- [start:pipeline]
     pipeline = dlt.pipeline(
         pipeline_name="sample_pipeline",
         destination=dlt.destinations.duckdb,
@@ -52,6 +56,7 @@ if __name__ == "__main__":
         },
     )
 
+    # --8<-- [end:pipeline]
     print("Done")
     print("Load info:")
     print(load_info)
