@@ -65,3 +65,12 @@ extra_css:
 plugins:
   - search
   - git-revision-date-localized
+
+nav:
+  - Home: index.md
+  - Introduction: 0-introduction.md
+  - Getting Started: 1-getting-started.md
+  - Sample Pipeline: 2-sample-pipeline-postgres-config.md
+  - Sources and Resources: 3-sources-and-resources.md
+  - Incremental Loading: 4-incremental-loading.md
+  - Other DLT Features: 5-other-features.md

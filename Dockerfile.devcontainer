@@ -44,7 +44,7 @@ RUN groupadd --gid ${USER_GID} "${USERNAME}" && \
 
 # add dev utilities
 RUN apt-get update && \
-  apt-get install -y --no-install-recommends iputils-ping make && \
+  apt-get install -y --no-install-recommends iputils-ping git make postgresql && \
   rm -rf /var/lib/apt/lists/*
 
 # ---------------------------- add code specifics ---------------------------- #

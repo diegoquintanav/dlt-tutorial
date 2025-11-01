@@ -12,6 +12,7 @@ services:
       - ./docs:/docs/docs # needed for mkdocs serve
       - ./README.md:/docs/README.md
       - ./.git:/docs/.git:ro # needed for plugins
+      - ./dlt_tutorial:/docs/dlt_tutorial:ro # needed for plugins
     command:
       - "serve"
       - "--dev-addr=0.0.0.0:8000"

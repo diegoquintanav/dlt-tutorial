@@ -8,8 +8,6 @@ services:
     volumes:
       - .:/app:cached
       - uv_venv:/app/.venv:cached
-    ports:
-      - 8000:8000
     command: ["tail", "-f", "/dev/null"]
 
 volumes:
