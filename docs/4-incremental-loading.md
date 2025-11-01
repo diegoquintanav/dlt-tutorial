@@ -145,9 +145,17 @@ sample_pipeline_postgres.destination.postgres.credentials = 'postgresql://neondb
 
 You can also set the connection parameters using environment variables. See the [documentation](https://dlthub.com/docs/general-usage/credentials/setup#postgresql) for more information.
 
-## Running the Postgres incremental loading example
+## Replace everything
 
 You can run now the [3_sample_pipeline_postgres_config.py](../dlt_tutorial/3_sample_pipeline_postgres_config.py) script to test the Postgres connection and configuration.
+
+The only things that have changed from the previous examples is the `write_disposition` and `write_strategy` parameters when running the pipeline:
+
+```python linenums="1" hl_lines="2-3"
+--8<-- "dlt_tutorial/3_sample_pipeline_postgres_config.py:pipeline"
+```
+
+If we run this example, we should see output similar to this:
 
 ```bash
 $ python dlt_tutorial/3_sample_pipeline_postgres_config.py
@@ -160,7 +168,34 @@ The postgres destination used postgresql://postgres:***@localhost:5555/postgres 
 Load package 1762003276.163356 is LOADED and contains no failed jobs
 ```
 
-- [4_sample_pipeline_append.py](../dlt_tutorial/4_sample_pipeline_append.py)
-- [4b_sample_pipeline_append_pk.py](../dlt_tutorial/4b_sample_pipeline_append_pk.py)
-- [5_sample_pipeline_merge_upsert.py](../dlt_tutorial/5_sample_pipeline_merge_upsert.py)
-- [6_sample_pipeline_merge_scd2.py](../dlt_tutorial/6_sample_pipeline_merge_scd2.py)
+We can now connect to our Postgres database and check the contents of the `sample_data.samples` table:
+
+```bash
+$PGPASSWORD=test psql -h 0.0.0.0 -p 5555 -U postgres --pset expanded=auto -c "select * from sample_data.samples;"
+ id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |        metadata__script_name         |   _dlt_load_id    |    _dlt_id     
+----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+--------------------------------------+-------------------+----------------
+  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-01 10:21:16.172598+00 | 3_sample_pipeline_postgres_config.py | 1762003276.163356 | MJaJ6AzyVleWlQ
+  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-01 10:21:16.172663+00 | 3_sample_pipeline_postgres_config.py | 1762003276.163356 | IrYyUJd1NAmnBQ
+(2 rows)
+```
+
+??? question "What happens if we run the script again?"
+
+    If you run the script again, since the `write_disposition` is set to `"replace"` and the `refresh` parameter is set to `"drop_sources"`, the existing data in the `sample_data.samples` table will be replaced with the new data fetched from the source, every time. You should see different `metadata__ingested_at` timestamps, and different `_dlt_load_id` and `_dlt_id` values with each run.
+
+## A slight detour: enabling full refresh
+
+We will explore incremental loading strategies in the next sections, but first, let's see how to enable full refreshes.
+
+## Append only
+
+* [4_sample_pipeline_append.py](../dlt_tutorial/4_sample_pipeline_append.py)
+* [4b_sample_pipeline_append_pk.py](../dlt_tutorial/4b_sample_pipeline_append_pk.py)
+
+## Upsert strategy
+
+[5_sample_pipeline_merge_upsert.py](../dlt_tutorial/5_sample_pipeline_merge_upsert.py)
+
+## Slowly Changing Dimensions (SCD2)
+
+[6_sample_pipeline_merge_scd2.py](../dlt_tutorial/6_sample_pipeline_merge_scd2.py)
