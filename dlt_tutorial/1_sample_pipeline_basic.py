@@ -58,5 +58,7 @@ if __name__ == "__main__":
 
     # --8<-- [end:pipeline]
     print("Done")
+    # --8<-- [start:load_info]
     print("Load info:")
     print(load_info)
+    # --8<-- [end:load_info]

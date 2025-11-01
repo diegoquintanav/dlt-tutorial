@@ -42,12 +42,14 @@ def sample_source(my_custom_parameter: str = "foo"):
 
 
 if __name__ == "__main__":
+    # --8<-- [start:pipeline]
     pipeline = dlt.pipeline(
         pipeline_name="sample_pipeline_postgres",
         destination=dlt.destinations.postgres,
         dataset_name="sample_data",
     )
 
+    print("Starting pipeline...")
     load_info = pipeline.run(
         sample_source,
         table_name="samples",
@@ -56,5 +58,8 @@ if __name__ == "__main__":
             "disposition": "replace",
         },
     )
-
+    # --8<-- [end:pipeline]
+    print("Pipeline run completed.")
+    # --8<-- [start:load_info]
     print(load_info)
+    # --8<-- [end:load_info]
