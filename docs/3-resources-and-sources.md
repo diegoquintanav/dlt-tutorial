@@ -67,14 +67,28 @@ We can now pass this generator function to our `dlt` pipeline:
 --8<-- "dlt_tutorial/1_sample_pipeline_basic.py:pipeline"
 ```
 
-You can run this script in the same way as before:
+This time, however, we are printing the result of the `pipeline.run()` method, which returns a `LoadInfo` object containing details about the loading process.
+
+```python linenums="1" hl_lines="10"
+--8<-- "dlt_tutorial/1_sample_pipeline_basic.py:load_info"
+```
+
+You can run this script in the same way as before
 
 ```bash
 $ python dlt_tutorial/1_sample_pipeline_basic.py
 Running pipeline...
 Done
-...
+Load info:
+Pipeline sample_pipeline load step completed in 0.28 seconds
+1 load package(s) were loaded to destination duckdb and into dataset sample_data
+The duckdb destination used duckdb:////home/diego/Code/playground/dlt-tutorial/sample_pipeline.duckdb location to store data
+Load package 1762003350.048731 is LOADED and contains no failed jobs
 ```
+
+!!! tip "What is the load info?"
+
+    The load info provides details about the loading process, including the time taken, the number of load packages, and the destination where the data was stored. It also indicates whether there were any failed jobs during the loading process.
 
 !!! tip "Using generators with dlt"
 

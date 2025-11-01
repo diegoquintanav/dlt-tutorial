@@ -28,7 +28,9 @@ If you want to explore more alternatives, you can check out the [ETL Tools Compa
 
 ## Why `dlt`?
 
-!!! warning "This is all my opinion and you should form your own."
+!!! warning "On opinions"
+
+    ![youropinion](https://c.tenor.com/dlLdNF3Z-CUAAAAd/the-big-lebowski-thats-like-your-opinion-man.gif)
 
 ### Less is more
 
