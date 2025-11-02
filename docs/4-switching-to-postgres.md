@@ -18,9 +18,9 @@ The new **incoming** data looks like this:
 | id |   name    |       created_at       |       updated_at       |
 |---:|-----------|------------------------|------------------------|
 | 1  | Jumpman   | 2025-10-09 14:40:00    | 2025-10-10 11:50:00    |
-| 3  | Ms. Peach | 2025-10-12 13:15:00    | 2025-10-11 13:50:00    |
+| 3  | Ms. Peach | 2025-10-12 13:15:00    | 2025-10-13 13:50:00    |
 
-Mario is [now known](https://www.reddit.com/r/Marioverse/comments/1ef7f4f/jan_misalis_breakdown_of_the_jumpman_is_not_mario/) as ["Jumpman"](https://www.mariowiki.com/List_of_Mario_names_in_other_languages#Jumpman), it was updated a day after its latest update, and a new record for "Ms. Peach" has been added.
+Mario is [now known](https://www.reddit.com/r/Marioverse/comments/1ef7f4f/jan_misalis_breakdown_of_the_jumpman_is_not_mario/) as ["Jumpman"](https://www.mariowiki.com/List_of_Mario_names_in_other_languages#Jumpman), it was updated after its latest update, and a new record for "Ms. Peach" has been added.
 
 What should be the final state of our table after loading this new data? _It depends on the logic we want to implement for handling updates and inserts._
 
