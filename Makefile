@@ -15,16 +15,16 @@ build_slides_en: ## Build slides PDF from markdown using Marp, in english
 duckdb.query_sample: ## Run sample query against duckdb database
 	@duckdb sample_pipeline.duckdb -c "select * from sample_data.samples;"
 
-postgres.query_sample.host: ## Run sample query against postgres database (from host)
+postgres.host.query_sample: ## Run sample query against postgres database (from host)
 	@PGPASSWORD=test psql -h 0.0.0.0 -p 5555 -U postgres --pset expanded=auto -c "select * from sample_data.samples;"
 
-postgres.query_sample.devcontainer: ## Run sample query against postgres database (from devcontainer)
+postgres.devcontainer.query_sample: ## Run sample query against postgres database (from devcontainer)
 	@PGPASSWORD=test psql -h postgres -p 5432 -U postgres --pset expanded=auto -c "select * from sample_data.samples;"
 
-postgres.psql.host: ## Run psql against postgres database (from host)
+postgres.host.psql: ## Run psql against postgres database (from host)
 	@PGPASSWORD=test psql -h 0.0.0.0 -p 5555 -U postgres
 
-postgres.psql.devcontainer: ## Run psql against postgres database (from devcontainer)
+postgres.devcontainer.psql: ## Run psql against postgres database (from devcontainer)
 	@PGPASSWORD=test psql -h postgres -p 5432 -U postgres
 
 compose.postgres.query_sample: ## Run sample query against postgres database in docker compose
