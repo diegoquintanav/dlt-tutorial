@@ -24,11 +24,9 @@ There are many alternatives to `dlt` that address the data loading tasks. The li
 - **Meltano**: An open-source data integration platform that focuses on ELT. It provides a wide range of connectors for various data sources and destinations, and allows users to define transformation logic using yaml configuration files. See <https://meltano.com/>
 - **Dagster**: An open-source data orchestrator for machine learning, analytics, and ETL. It provides a framework for building, scheduling, and monitoring data pipelines. See <https://dagster.io/>.
 
-If you want to explore more alternatives, you can check out the [ETL Tools Comparison](https://www.oreilly.com/radar/etl-tools-comparison/).
-
 ## Why `dlt`?
 
-!!! warning "On opinions"
+!!! warning "That is like, your opinion, man"
 
     ![youropinion](https://c.tenor.com/dlLdNF3Z-CUAAAAd/the-big-lebowski-thats-like-your-opinion-man.gif)
 
@@ -73,4 +71,4 @@ Writing documentation is difficult. I struggle with it myself. One of the verses
 
 > There should be one-- and preferably only one --obvious way to do it.
 
-The docs show multiple ways to achieve the same, which can be confusing for users. Sometimes imports are missing, some explanations on usage are unclear, and there are inconsistencies in the examples provided.
+The docs show multiple ways to achieve the same, which can be confusing for users. Sometimes imports are missing, some explanations on usage are unclear, and there are inconsistencies in the examples provided. It feels chaotic at times.
