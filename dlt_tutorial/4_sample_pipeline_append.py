@@ -8,7 +8,8 @@ from dlt.pipeline import TRefreshMode
 
 
 # --8<-- [start:resource]
-@dlt.resource
+@dlt.resource(primary_key="id", write_disposition="append")
+# --8<-- [start:new_data]
 def sample_data(use_new_data: bool = False) -> Generator[dict, None, None]:
     my_data = [
         {
@@ -65,17 +66,8 @@ def sample_data(use_new_data: bool = False) -> Generator[dict, None, None]:
         yield item
 
 
+# --8<-- [end:new_data]
 # --8<-- [end:resource]
-
-
-# --8<-- [start:source]
-@dlt.source
-def sample_source(my_custom_parameter: str = "foo"):
-    print(f"Custom parameter value: {my_custom_parameter}")
-    yield sample_data
-
-
-# --8<-- [end:source]
 
 
 # --8<-- [start:parse_args]
@@ -104,7 +96,7 @@ if __name__ == "__main__":
         print("Refreshing data in the destination.")
 
     load_info = pipeline.run(
-        sample_source,
+        sample_data,
         table_name="samples",
         refresh=refresh_mode if should_refresh else None,
     )

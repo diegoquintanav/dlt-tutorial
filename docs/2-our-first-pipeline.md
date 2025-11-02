@@ -1,6 +1,4 @@
-# Part 0: A simple example using `duckdb`
-
-## Simple example using `duckdb`
+# A simple example using `duckdb`
 
 At its most basic form, `dlt` takes in an iterable that produces dictionaries. it will treat every dictionary as a unit of data and it will move it into a `target`.
 

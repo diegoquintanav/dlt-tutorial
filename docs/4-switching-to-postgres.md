@@ -110,9 +110,9 @@ We can define the **write disposition** and the **write strategy** when **runnin
 
 ## Setting up a Postgres database
 
-Refer to the [Getting Started](getting-started.md) section to learn how to set up a postgres database. Once you have a valid postgres instance, you need to setup its postgres credentials.
+Refer to the [Getting Started](1-getting-started.md) section to learn how to set up a postgres database. Once you have a valid postgres instance, you need to setup its postgres credentials.
 
-!!! info "Incremental loading patterns are not supported by duckdb"
+!!! info "Some incremental loading patterns are not supported by `duckdb`"
 
     Duckdb is an analytics, in-memory database. It shines for some types of tasks, and it offers its own implementation of `MERGE`. However, incremental loading patterns are not fully supported by `dlt` at the moment.
 
@@ -143,16 +143,18 @@ sample_pipeline_postgres.destination.postgres.credentials = 'postgresql://neondb
 
     Adjust the connection parameters (`host`, `port`, `user`, `password`, `dbname`) according to your Postgres setup. If you are using the devcontainer, the host should be `postgres` and the port `5432`.
 
-You can also set the connection parameters using environment variables. See the [documentation](https://dlthub.com/docs/general-usage/credentials/setup#postgresql) for more information.
+!!! tip "Set connection parameters using environment variables"
+
+    You can also set the connection parameters using environment variables. See the [documentation](https://dlthub.com/docs/general-usage/credentials/setup#postgresql) for more information.
 
 ## Replace everything using postgres
 
-You can run now the [3_sample_pipeline_postgres_config.py](../dlt_tutorial/3_sample_pipeline_postgres_config.py) script to test the Postgres connection and configuration.
+You can run now the `3_sample_pipeline_postgres_config.py` script to test the Postgres connection and configuration.
 
 The only things that have changed from the previous examples is the `write_disposition` and `write_strategy` parameters when running the pipeline:
 
-```python linenums="1" hl_lines="2-3"
---8<-- "dlt_tutorial/3_sample_pipeline_postgres_config.py:pipeline"
+```python linenums="1" hl_lines="3-5"
+--8<-- "dlt_tutorial/3_sample_pipeline_postgres_config.py:resource"
 ```
 
 If we run this example, we should see output similar to this:
@@ -160,7 +162,6 @@ If we run this example, we should see output similar to this:
 ```bash
 $ python dlt_tutorial/3_sample_pipeline_postgres_config.py
 Starting pipeline...
-Custom parameter value: foo
 Pipeline run completed.
 Pipeline sample_pipeline_postgres load step completed in 0.11 seconds
 1 load package(s) were loaded to destination postgres and into dataset sample_data

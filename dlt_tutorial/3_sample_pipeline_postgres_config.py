@@ -5,7 +5,13 @@ from typing import Generator
 import dlt
 
 
-@dlt.resource
+# --8<-- [start:resource]
+@dlt.resource(
+    name="sample_data",
+    write_disposition={
+        "disposition": "replace",
+    },
+)
 def sample_data() -> Generator[dict, None, None]:
     my_data = [
         {
@@ -35,10 +41,7 @@ def sample_data() -> Generator[dict, None, None]:
         yield item
 
 
-@dlt.source
-def sample_source():
-    yield sample_data
-
+# --8<-- [end:resource]
 
 if __name__ == "__main__":
     # --8<-- [start:pipeline]
@@ -50,12 +53,9 @@ if __name__ == "__main__":
 
     print("Starting pipeline...")
     load_info = pipeline.run(
-        sample_source,
+        sample_data,
         table_name="samples",
         refresh="drop_sources",
-        write_disposition={
-            "disposition": "replace",
-        },
     )
     # --8<-- [end:pipeline]
     print("Pipeline run completed.")

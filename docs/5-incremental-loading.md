@@ -1,6 +1,6 @@
 # Trying out incremental loading
 
-## A slight detour: enabling full refresh
+## A slight detour: enabling full refresh through command line arguments
 
 We will explore incremental loading strategies in the next sections, but first, we are going to need an easy way to tell dlt how to handle full refreshes so we can rapidly start from scratch, if something goes wrong.
 
@@ -16,7 +16,7 @@ We will explore incremental loading strategies in the next sections, but first, 
 
 To enable this option we can modify our pipeline script to include the `refresh` parameter when creating the pipeline.
 
-```python linenums="1" hl_lines="1-14 32"
+```python linenums="1" hl_lines="1-8 12-13 28"
 --8<-- "dlt_tutorial/4_sample_pipeline_append.py:parse_args"
 ```
 
@@ -24,8 +24,8 @@ This way, when we run our pipeline with the `--refresh` flag, it will drop exist
 
 We also implement the parameter to simulate loading new data in the next sections. We modify our `resource` based on this flag.
 
-```python linenums="1" hl_lines="2 28"
---8<-- "dlt_tutorial/4_sample_pipeline_append.py:resource"
+```python linenums="1" hl_lines="2 27"
+--8<-- "dlt_tutorial/4_sample_pipeline_append.py:new_data"
 ```
 
 Our new command-line interface looks like this:
@@ -85,6 +85,17 @@ SELECT * FROM sample_data.samples;
 
     Each time we run the pipeline, new data will be appended to the existing data in the destination. This is because we are using the default `append` loading strategy, which adds new records to the existing table without modifying or deleting any existing records.
 
+    ```
+     id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |    metadata__script_name    |    _dlt_load_id    |    _dlt_id     
+    ----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+-----------------------------+--------------------+----------------
+      1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:30:16.036039+00 | 4_sample_pipeline_append.py | 1762119016.0306315 | pJA1hF4HneOUbw
+      2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:30:16.036077+00 | 4_sample_pipeline_append.py | 1762119016.0306315 | UxcgfhkMgMleKg
+      1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:30:20.517005+00 | 4_sample_pipeline_append.py | 1762119020.5093243 | HMDNsEtH+RBPXQ
+      2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:30:20.517057+00 | 4_sample_pipeline_append.py | 1762119020.5093243 | SbekuWD7fosP1Q
+    (4 rows)
+
+    ```
+
 ### Append with incremental primary key
 
 In our previous example, we were able to append new data to the destination, but we did not have a way to uniquely identify each record. This can lead to duplicate records if the same data is loaded multiple times. An alternative is to use an incremental primary key to uniquely identify each record.
@@ -116,14 +127,17 @@ $ python dlt_tutorial/4b_sample_pipeline_append_pk.py --refresh
 # output omitted for brevity
 ```
 
-and run it again without the `--refresh` flag to append new data:
+and run it again **without** the `--refresh` flag to append new data:
 
-```bash
+```bash linenums="1" hl_lines="3"
 $ python dlt_tutorial/4b_sample_pipeline_append_pk.py
 # output omitted for brevity
+0 load package(s) were loaded to destination postgres and into dataset None
+The postgres destination used postgresql://postgres:***@localhost:5555/postgres location to store data
+Done
 ```
 
-You can check the contents of the `sample_data` table in Postgres to see the results:
+You'll see that no new records were added to the `sample_data` table. You can check the contents of the `sample_data` table in Postgres to see the results:
 
 ```sql
 SELECT * FROM sample_data.samples;
@@ -165,20 +179,124 @@ The merge write disposition can be used with three different strategies:
 
 To implement these strategies, we need to modify the `write_disposition` parameter when creating the pipeline.
 
-```python linenums="1" hl_lines="5-8"
---8<-- "dlt_tutorial/5_sample_pipeline_merge_upsert.py:pipeline_run"
-```
+### Upsert
 
 We can remove the `apply_hints` method since we are not using an incremental primary key in this example.
 
-### Upsert
+If we want to use the `upsert` strategy, we can run the modified pipeline with the `--refresh` flag to start from scratch:
 
-```python linenums="1" hl_lines="2-3"
---8<-- "dlt_tutorial/5_sample_pipeline_merge_upsert.py"
+```linenums="1" hl_lines="4"
+--8<-- "dlt_tutorial/5_sample_pipeline_merge_upsert.py:resource_decorator"
 ```
+
+```bash
+$ python dlt_tutorial/5_sample_pipeline_merge_upsert.py --refresh
+# output omitted for brevity
+```
+
+and run it again without the `--refresh` flag to upsert new data:
+
+```bash
+$ python dlt_tutorial/5_sample_pipeline_merge_upsert.py
+# output omitted for brevity
+```
+
+You should see that no records were added to the `sample_data` table. You can check the contents of the `sample_data` table in Postgres to see the results:
+
+```sql
+SELECT * FROM sample_data;
+
+```
+
+Try now running the pipeline passing the `USE_NEW_DATA=1` environment variable to simulate loading new data:
+
+```bash
+$ USE_NEW_DATA=1 python dlt_tutorial/5_sample_pipeline_merge_upsert.py
+# output omitted for brevity
+```
+
+??? question "What is the result of running the pipeline with `USE_NEW_DATA=1`?"
+
+    When running the pipeline with `USE_NEW_DATA=1`, the resource function generates a new set of data that includes
+    records with `id` values that already exist in the destination. Since we are using the `upsert` strategy, `dlt` will update existing records in the destination if a record with the same `id` already exists, or insert new records if the `id` does not exist.
+
+    ```txt
+    postgres=# select * from sample_data.samples;
+     id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |       metadata__script_name       |    _dlt_load_id    |_dlt_id
+    ----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+-----------------------------------+--------------------+----------------
+      2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:37:17.901958+00 | 5_sample_pipeline_merge_upsert.py | 1762119437.8970616 | M6/KlLzJ2FeV/w
+      1 | Jumpman   | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-10 11:50:00+00 | 2025-11-02 18:37:23.170644+00 | 5_sample_pipeline_merge_upsert.py | 1762119443.1653655 | z5jIxXIbUnmbKw
+      3 | Ms. Peach | 1a73f32f-9144-4318-9a00-4437bde41627 | 2025-10-12 13:15:00+00 | 2025-10-13 13:50:00+00 | 2025-11-02 18:37:23.170657+00 | 5_sample_pipeline_merge_upsert.py | 1762119443.1653655 | hKdQ/VhGat+Pgw
+    (3 rows)
+    ```
 
 ### Slowly Changing Dimensions (SCD2)
 
-```python linenums="1" hl_lines="2-3"
---8<-- "dlt_tutorial/6_sample_pipeline_merge_scd2.py"
+In the same way, we can implement the `scd2` strategy by modifying the `write_disposition` parameter when creating the pipeline.
+
+Given a **match** between incoming and existing rows on some **key**,
+leave the existing target row and "**INSERT**" a new record
+from the incoming data, using some auxiliary columns.
+
+This allows for tracking the validity of the latest value, but it takes more space in disk.
+
+```python linenums="1" hl_lines="4"
+--8<-- "dlt_tutorial/6_sample_pipeline_merge_scd2.py:resource_decorator"
 ```
+
+In practice, `dlt` will calculate a surrogate key for each record based on the primary key and the hash of the record's content.
+
+When a record with the same primary key but different content is encountered, a new record is inserted with a new surrogate key, while the existing record is marked as expired.
+
+You can run the modified pipeline with the `--refresh` flag to start from scratch:
+
+```bash
+$ python dlt_tutorial/6_sample_pipeline_merge_scd2.py --refresh
+# output omitted for brevity
+```
+
+and run it again without the `--refresh` flag to upsert new data:
+
+```bash
+$ python dlt_tutorial/6_sample_pipeline_merge_scd2.py
+# output omitted for brevity  
+```
+
+Since our data has a metadata column named `metadata__ingested_at` that is based on the execution timestamp, `dlt` will compute a different surrogate key every time a record is inserted.
+
+This will in effect insert new rows every time we run the pipeline, and will mark the previous rows as expired.
+
+```psql
+postgres=# select * from sample_data.samples;
+        _dlt_valid_from        |        _dlt_valid_to         | id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |      metadata__script_name      |    _dlt_load_id    |    _dlt_id     
+-------------------------------+------------------------------+----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+---------------------------------+--------------------+----------------
+ 2025-11-02 21:43:43.942528+00 | 2025-11-02 21:46:07.88226+00 |  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:43:43.948416+00 | 6_sample_pipeline_merge_scd2.py | 1762119823.9425282 | 2PDbMZWckGbEzQ
+ 2025-11-02 21:43:43.942528+00 | 2025-11-02 21:46:07.88226+00 |  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:43:43.94847+00  | 6_sample_pipeline_merge_scd2.py | 1762119823.9425282 | zFQAhPCh1tzs2A
+ 2025-11-02 21:46:07.88226+00  |                              |  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:46:07.887446+00 | 6_sample_pipeline_merge_scd2.py | 1762119967.8822596 | I6WPZYVDBhg9zQ
+ 2025-11-02 21:46:07.88226+00  |                              |  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:46:07.887478+00 | 6_sample_pipeline_merge_scd2.py | 1762119967.8822596 | CrpVG8J0ezqiQg
+(4 rows)
+```
+
+??? question "How do we know what is the most recent value when using SCD2?"
+
+    When using the SCD2 strategy, each record has two additional columns: `_dlt_valid_from` and `_dlt_valid_to`. The `_dlt_valid_from` column indicates the timestamp when the record became valid, while the `_dlt_valid_to` column indicates the timestamp when the record was superseded by a newer version.
+
+    To find the most recent value for a given primary key, you can query for records where the `_dlt_valid_to` column is `NULL`, as this indicates that the record is currently valid.
+
+    For example, to find the most recent records in the `sample_data.samples` table, you can run the following SQL query:
+
+    ```sql
+    SELECT * FROM sample_data.samples WHERE _dlt_valid_to IS NULL;
+    ```
+
+    This will return only the records that are currently valid, allowing you to see the most recent values for each primary key.
+
+??? question "What happens if you execute the pipeline using the environment variable `USE_NEW_DATA=1`?"
+
+    In the new data you will see that `Mr. Luigi` is not present. This means that when executing the pipeline with `USE_NEW_DATA=1`, this record will be marked as expired in the destination table (A _hard delete_), and a new record for `Jumpman` will be inserted.
+
+## Wrapping up
+
+We've explored different incremental loading strategies using `dlt`, including `append`, `upsert`, and `SCD2`. Each strategy has its own use cases and benefits, depending on the requirements of your data pipeline.
+
+`dlt` offers more strategies and options for incremental loading. Refer to the [dlt documentation](https://dlthub.com/docs/general-usage/incremental-loading) for more information on how to implement these strategies in your data pipelines.

@@ -79,6 +79,6 @@ nav:
       - Introduction to incremental loading: 4-switching-to-postgres.md
       - Trying out incremental loading: 5-incremental-loading.md
   - "Part 3: Other features":
-      - Other DLT Features: 6-other-features.md
+      - Schema Validation: 6-schema-validation.md
   - "Wrapping Up":
       - Conclusions and next steps: 7-next-steps.md

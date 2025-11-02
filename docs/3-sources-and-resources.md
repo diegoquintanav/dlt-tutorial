@@ -162,6 +162,12 @@ Done
 
     See <https://dlthub.com/docs/general-usage/credentials/setup#how-dlt-looks-for-values> for more information on how `dlt` searches for configuration values.
 
+!!! warning "We will be using `resource` directly from now on"
+
+    From now on, we will be using `resource` directly instead of wrapping them in _sources_, unless we need to group multiple resources together.
+
+    Since we are only using a single resource, we can pass it directly to the `pipeline.run()` method.
+
 ## Wrapping up
 
 In this part, we learned about iterators and generators in Python, and how they can be used to efficiently handle data in `dlt` pipelines. We also introduced the concepts of `resources` and `sources`, which help structure data extraction in a more modular way.

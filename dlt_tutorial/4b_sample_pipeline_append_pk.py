@@ -9,7 +9,7 @@ from dlt.pipeline import TRefreshMode
 
 # --8<-- [start:resource_decorator]
 # --8<-- [start:resource]
-@dlt.resource(primary_key="id")
+@dlt.resource(primary_key="id", write_disposition="append")
 def sample_data(use_new_data: bool = False) -> Generator[dict, None, None]:
     # --8<-- [end:resource_decorator]
     my_data = [
@@ -73,15 +73,6 @@ def sample_data(use_new_data: bool = False) -> Generator[dict, None, None]:
 # --8<-- [end:resource]
 
 
-# --8<-- [start:source]
-@dlt.source
-def sample_source():
-    yield sample_data
-
-
-# --8<-- [end:source]
-
-
 # --8<-- [start:parse_args]
 def parse_args():
     parser = argparse.ArgumentParser(description="Sample DLT Pipeline with Append")
@@ -109,17 +100,12 @@ if __name__ == "__main__":
         print("Refreshing data in the destination.")
     # --8<-- [start:apply_hints]
     # add unique and incremental primary key on "id" column
-    annotated_source = sample_source().sample_data.apply_hints(
-        incremental=dlt.sources.incremental("id")
-    )
+    hinted_data = sample_data.apply_hints(incremental=dlt.sources.incremental("id"))
 
     load_info = pipeline.run(
-        annotated_source,
+        hinted_data,
         table_name="samples",
         refresh=refresh_mode if should_refresh else None,
-        write_disposition={
-            "disposition": "append",
-        },
     )
     # --8<-- [end:apply_hints]
     # --8<-- [end:parse_args]
