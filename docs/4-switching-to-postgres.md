@@ -6,8 +6,8 @@ Consider the following state of your table at a given time:
 
 | id |   name    |       created_at       |       updated_at       |
 |---:|-----------|------------------------|------------------------|
-| 1  | Mr. Mario | 2025-10-09 11:40:00-03 | 2025-10-09 11:50:00-03 |
-| 2  | Mr. Luigi | 2025-10-08 13:15:00-03 | 2025-10-08 13:50:00-03 |
+| 1  | Mr. Mario | 2025-10-09 14:40:00    | 2025-10-09 14:50:00    |
+| 2  | Mr. Luigi | 2025-10-08 16:15:00    | 2025-10-08 16:50:00    |
 
 In this table, we can identify two records, which can be uniquely identified by their `id` or `uuid` fields. Each record also has `created_at` and `updated_at` timestamps.
 
@@ -17,10 +17,10 @@ The new **incoming** data looks like this:
 
 | id |   name    |       created_at       |       updated_at       |
 |---:|-----------|------------------------|------------------------|
-| 1  | Jumpman   | 2025-10-09 11:40:00-03 | 2025-10-10 11:50:00-03 |
-| 3  | Ms. Peach | 2025-10-08 13:15:00-03 | 2025-10-08 13:50:00-03 |
+| 1  | Jumpman   | 2025-10-09 14:40:00    | 2025-10-10 11:50:00    |
+| 3  | Ms. Peach | 2025-10-12 13:15:00    | 2025-10-11 13:50:00    |
 
-Mario is now known as ["Jumpman"](https://www.mariowiki.com/List_of_Mario_names_in_other_languages#Jumpman), it was updated a day after its latest update, and a new record for "Ms. Peach" has been added.
+Mario is [now known](https://www.reddit.com/r/Marioverse/comments/1ef7f4f/jan_misalis_breakdown_of_the_jumpman_is_not_mario/) as ["Jumpman"](https://www.mariowiki.com/List_of_Mario_names_in_other_languages#Jumpman), it was updated a day after its latest update, and a new record for "Ms. Peach" has been added.
 
 What should be the final state of our table after loading this new data? _It depends on the logic we want to implement for handling updates and inserts._
 
@@ -145,7 +145,7 @@ sample_pipeline_postgres.destination.postgres.credentials = 'postgresql://neondb
 
 You can also set the connection parameters using environment variables. See the [documentation](https://dlthub.com/docs/general-usage/credentials/setup#postgresql) for more information.
 
-## Replace everything
+## Replace everything using postgres
 
 You can run now the [3_sample_pipeline_postgres_config.py](../dlt_tutorial/3_sample_pipeline_postgres_config.py) script to test the Postgres connection and configuration.
 
@@ -182,20 +182,3 @@ $PGPASSWORD=test psql -h 0.0.0.0 -p 5555 -U postgres --pset expanded=auto -c "se
 ??? question "What happens if we run the script again?"
 
     If you run the script again, since the `write_disposition` is set to `"replace"` and the `refresh` parameter is set to `"drop_sources"`, the existing data in the `sample_data.samples` table will be replaced with the new data fetched from the source, every time. You should see different `metadata__ingested_at` timestamps, and different `_dlt_load_id` and `_dlt_id` values with each run.
-
-## A slight detour: enabling full refresh
-
-We will explore incremental loading strategies in the next sections, but first, let's see how to enable full refreshes.
-
-## Append only
-
-* [4_sample_pipeline_append.py](../dlt_tutorial/4_sample_pipeline_append.py)
-* [4b_sample_pipeline_append_pk.py](../dlt_tutorial/4b_sample_pipeline_append_pk.py)
-
-## Upsert strategy
-
-[5_sample_pipeline_merge_upsert.py](../dlt_tutorial/5_sample_pipeline_merge_upsert.py)
-
-## Slowly Changing Dimensions (SCD2)
-
-[6_sample_pipeline_merge_scd2.py](../dlt_tutorial/6_sample_pipeline_merge_scd2.py)

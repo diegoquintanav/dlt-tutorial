@@ -15,6 +15,8 @@ theme:
     - content.action.view
     - content.code.copy
     - content.code.annotate
+    - navigation.footer
+    - navigation.sections
   icon:
     edit: material/pencil
     view: material/eye
@@ -70,7 +72,13 @@ nav:
   - Home: index.md
   - Introduction: 0-introduction.md
   - Getting Started: 1-getting-started.md
-  - Sample Pipeline: 2-sample-pipeline-postgres-config.md
-  - Sources and Resources: 3-sources-and-resources.md
-  - Incremental Loading: 4-incremental-loading.md
-  - Other DLT Features: 5-other-features.md
+  - "Part 1: Simple Pipeline with duckdb":
+      - Sample Pipeline: 2-our-first-pipeline.md
+      - Sources and Resources: 3-sources-and-resources.md
+  - "Part 2: Incremental Pipeline with Postgres":
+      - Introduction to incremental loading: 4-switching-to-postgres.md
+      - Trying out incremental loading: 5-incremental-loading.md
+  - "Part 3: Other features":
+      - Other DLT Features: 6-other-features.md
+  - "Wrapping Up":
+      - Conclusions and next steps: 7-next-steps.md
