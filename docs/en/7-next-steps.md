@@ -19,7 +19,9 @@ dlt --help
 It may be of particular interest to explore the [dashboard](https://dlthub.com/docs/reference/command-line-interface#dlt-pipeline-show) commands:
 
 ```bash
-dlt pipeline sample_pipeline show
+dlt pipeline --list # shows existing pipelines
+dlt pipeline <pipeline_name> show # shows pipeline details using streamlit
+dlt pipeline <pipeline_name> show --dashboard # shows pipeline dashboard using marimo
 ```
 
 Refer to the [official documentation](https://dlthub.com/docs/reference/command-line-interface) for more details on the available commands and their usage.
@@ -64,5 +66,16 @@ If you feel that `dlt` is a good fit for your data loading needs, you can explor
 
 - <https://dlthub.com/docs/tutorial/fundamentals-course>
 - <https://dlthub.com/docs/tutorial/advanced-course>
+
+## Tips and tricks and recommendations
+
+- Pass `PROGRESS=log|tqdm|enlighten python script.py` to change the progress bar style ([source](https://dlthub.com/docs/general-usage/pipeline#monitor-the-loading-progress))
+- Stick to one `pipeline.run` per script.
+- Use `dlt` for ELT, not for ETL. Transform data as close to the source as possible.
+- Send the output of `pipeline.run` to another call to `pipeline.run` to persist execution logs to the same target
+- Pass `dev_mode=True` to `dlt.pipeline` to experiment ([source](https://dlthub.com/docs/general-usage/pipeline#do-experiments-with-dev-mode))
+- Separate dev/prod environments using `pipelines_dir` ([source](https://dlthub.com/docs/general-usage/pipeline#separate-working-environments-with-pipelines_dir))
+- `dlt` supports parallel execution through `concurrent.futures` ([source](https://dlthub.com/docs/reference/performance#running-multiple-pipelines-in-parallel))
+- Send errors to sentry by setting `runtime.sentry_dsn="https:///<...>"` in `config.toml` ([source](https://dlthub.com/docs/running-in-production/tracing))
 
 Until next time, happy data loading!
