@@ -50,17 +50,18 @@ marp: true
 ## Part 0: Getting started
 
 ---
-There **are three** routes to install what's needed to get started with this tutorial:
+There **are three or four** routes to install what's needed to get started with this tutorial:
 
 1. Install python, duckdb and use an external Postgres database from Neon (or your preferred provider)
 2. If you have `docker` and `docker compose` installed, use docker compose to set up a local Postgres database. Install python and duckdb normally.
 3. If you have `docker` and `docker compose` installed, use `devcontainers` to set up everything for you
+4. Most simple: Fork this repo and use GitHub Codespaces
 
 **Check the Getting Started part in the [guide](https://diegoquintanav.github.io/dlt-tutorial/en/) for detailed instructions on how to set up your environment**
 
 ---
 
-![bg contain](img/construction.jpg)
+![bg](img/construction.jpg)
 
 ---
 
@@ -105,7 +106,7 @@ import dlt
 
 pipeline = dlt.pipeline(
  pipeline_name="sample_pipeline",
- destination=dlt.target,
+ destination=dlt.destinations.duckdb,
  dataset_name="sample_data",
 )
 
@@ -463,7 +464,11 @@ USE_NEW_DATA=1 python dlt_tutorial/6_sample_pipeline_merge_scd2.py
 
 ---
 
-## Data contracts
+## Data schema validation
+
+---
+
+![bg](img/mario_contracts.png)
 
 ---
 
@@ -538,6 +543,12 @@ def my_resource():
 
 ## Other tricks and recommendations
 
+---
+
+![bg](img/mario_tricks.png)
+
+---
+
 - Pass `PROGRESS=log|tqdm|enlighten python script.py` to change the progress bar style ([source](https://dlthub.com/docs/general-usage/pipeline#monitor-the-loading-progress))
 - Stick to one `pipeline.run` per script.
 - Use `dlt` for ELT, not for ETL. Transform data as close to the source as possible.
@@ -594,6 +605,12 @@ Running a pipeline with `dataset_name='mydata'` and `table_name='users'` Will pr
 
 ## What's next?
 
+---
+
+![bg](img/mario_yoshi.png)
+
+---
+
 You should now be able to build basic pipelines using `dlt`. Here are some suggestions on what to explore next:
 
 ---
@@ -648,6 +665,10 @@ I did not open with this because it makes things complicated right away.
 ## Explore more advanced tutorials and courses
 
 See <https://dlthub.com/docs/tutorial/education> for more
+
+---
+
+![bg](img/mario_end.png)
 
 ---
 

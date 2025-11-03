@@ -50,17 +50,18 @@ marp: true
 ## Parte 0: Primeros pasos
 
 ---
-Hay **tres** rutas para instalar lo necesario para comenzar con este tutorial:
+Hay **tres o cuatro** rutas para instalar lo necesario para comenzar con este tutorial:
 
 1. Instalar python, duckdb y usar una base de datos Postgres externa de Neon (o tu proveedor preferido)
 2. Si tienes `docker` y `docker compose` instalados, usa docker compose para configurar una base de datos Postgres local. Instala python y duckdb normalmente.
 3. Si tienes `docker` y `docker compose` instalados, usa `devcontainers` para configurar todo por ti
+4. Más simple: Haz fork de este repo y usa GitHub Codespaces
 
 **Consulta la parte de Primeros Pasos en la [guía](https://diegoquintanav.github.io/dlt-tutorial/es/) para instrucciones detalladas sobre cómo configurar tu entorno**
 
 ---
 
-![bg contain](img/construction.jpg)
+![bg](img/construction.jpg)
 
 ---
 
@@ -105,7 +106,7 @@ import dlt
 
 pipeline = dlt.pipeline(
  pipeline_name="sample_pipeline",
- destination=dlt.target,
+ destination=dlt.destinations.duckdb,
  dataset_name="sample_data",
 )
 
@@ -463,7 +464,11 @@ USE_NEW_DATA=1 python dlt_tutorial/6_sample_pipeline_merge_scd2.py
 
 ---
 
-## Contratos de datos
+## Validación de esquemas de datos
+
+---
+
+![bg](img/mario_contracts.png)
 
 ---
 
@@ -538,6 +543,12 @@ def my_resource():
 
 ## Otros trucos y recomendaciones
 
+---
+
+![bg](img/mario_tricks.png)
+
+---
+
 - Pasa `PROGRESS=log|tqdm|enlighten python script.py` para cambiar el estilo de la barra de progreso ([fuente](https://dlthub.com/docs/general-usage/pipeline#monitor-the-loading-progress))
 - Mantente en un `pipeline.run` por script.
 - Usa `dlt` para ELT, no para ETL. Transforma datos lo más cerca posible de la fuente.
@@ -594,6 +605,12 @@ Ejecutar un pipeline con `dataset_name='mydata'` y `table_name='users'` producir
 
 ## ¿Qué sigue?
 
+---
+
+![bg](img/mario_yoshi.png)
+
+---
+
 Ahora deberías poder construir pipelines básicos usando `dlt`. Aquí hay algunas sugerencias sobre qué explorar a continuación:
 
 ---
@@ -648,6 +665,10 @@ No abrí con esto porque hace las cosas complicadas de inmediato.
 ## Explora tutoriales y cursos más avanzados
 
 Ver <https://dlthub.com/docs/tutorial/education> para más
+
+---
+
+![bg](img/mario_end.png)
 
 ---
 
