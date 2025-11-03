@@ -40,9 +40,9 @@ mkdocs.logs.docker: ## show the logs of the mkdocs container
 	@docker compose -f $(mkdocs_compose_file) logs -ft mkdocs
 
 mkdocs.requirements.txt: ## update requirements.txt file from pyproject.toml (only mkdocs)
-	@uv export --format requirements.txt --group mkdocs > mkdocs-requirements.txt
+	@uv export --format requirements.txt --only-group mkdocs --no-hashes -o mkdocs-requirements.txt
 	@echo "mkdocs-requirements.txt file updated"
 
 tutorial.requirements.txt: ## update requirements.txt file from pyproject.toml (only tutorial)
-	@uv export --format requirements.txt > requirements.txt
-	@echo "requirements.txt file updated"
+	@uv export --format requirements.txt --only-group tutorial --no-hashes -o requirements.txt
+	@echo "tutorial-requirements.txt file updated"
