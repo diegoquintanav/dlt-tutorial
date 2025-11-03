@@ -1,11 +1,12 @@
 site_name: DLT workshop
 site_description: |
-  Workshop to extract data using DLT (dlthub.com)
+  Workshop to load data using DLT (dlthub.com)
 site_author: Diego Quintana
-docs_dir: docs/es
+docs_dir: "docs/es"
 repo_url: https://github.com/diegoquintana/dlt-tutorial
-edit_uri: edit/main/docs/es/
-site_dir: site/es
+edit_uri: "edit/main/docs/es/"
+site_dir: "site/es"
+site_url: https://diegoquintanav.github.io/dlt-tutorial/es/
 
 theme:
   # logo: assets/images/logo.png
@@ -69,7 +70,6 @@ extra_css:
 plugins:
   - search:
       lang:
-        - en
         - es
   - git-revision-date-localized
 
@@ -77,16 +77,16 @@ extra:
   alternate:
     # Switch to English
     - name: English
-      link: /en/
+      link: https://diegoquintanav.github.io/dlt-tutorial/en/
       lang: en
     # Switch to Spanish
     - name: Español
-      link: /es/
+      link: https://diegoquintanav.github.io/dlt-tutorial/es/
       lang: es
 
 nav:
-  - Inicio: index.md
-  - Introducción: 0-introduction.md
+  - "Inicio": index.md
+  - "Introducción": 0-introduction.md
   - "Primeros pasos": 1-getting-started.md
   - "Parte 1: Pipeline simple con DuckDB":
       - "Ejemplo de pipeline": 2-our-first-pipeline.md

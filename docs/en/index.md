@@ -1,4 +1,4 @@
-# DLT Workshop
+# Welcome
 
 This repository serves as a practical tutorial for using `dlt` (dlthub.com). It collects step‑by‑step lessons, example code, and configuration notes designed to help readers quickly understand the core concepts and reproduce the examples locally.
 

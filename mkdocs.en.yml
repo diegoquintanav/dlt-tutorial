@@ -1,11 +1,12 @@
 site_name: DLT workshop
 site_description: |
-  Workshop to extract data using DLT (dlthub.com)
+  Workshop to load data using DLT (dlthub.com)
 site_author: Diego Quintana
-docs_dir: docs/en
+docs_dir: "docs/en"
 repo_url: https://github.com/diegoquintana/dlt-tutorial
-edit_uri: edit/main/docs/en/
-site_dir: site/en
+edit_uri: "edit/main/docs/en/"
+site_dir: "site/en"
+site_url: https://diegoquintanav.github.io/dlt-tutorial/en/
 
 theme:
   # logo: assets/images/logo.png
@@ -70,18 +71,17 @@ plugins:
   - search:
       lang:
         - en
-        - es
   - git-revision-date-localized
 
 extra:
   alternate:
     # Switch to English
     - name: English
-      link: /en/
+      link: https://diegoquintanav.github.io/dlt-tutorial/en/
       lang: en
     # Switch to Spanish
     - name: Español
-      link: /es/
+      link: https://diegoquintanav.github.io/dlt-tutorial/es/
       lang: es
 
 nav:
