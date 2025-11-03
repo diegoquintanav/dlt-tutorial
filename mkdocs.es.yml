@@ -3,7 +3,7 @@ site_description: |
   Workshop to load data using DLT (dlthub.com)
 site_author: Diego Quintana
 docs_dir: "docs/es"
-repo_url: https://github.com/diegoquintana/dlt-tutorial
+repo_url: https://github.com/diegoquintanav/dlt-tutorial
 edit_uri: "edit/main/docs/es/"
 site_dir: "site/es"
 site_url: https://diegoquintanav.github.io/dlt-tutorial/es/
