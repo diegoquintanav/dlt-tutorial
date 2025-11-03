@@ -94,6 +94,10 @@ Necesitarás esta cadena de conexión, y veremos cómo usarla en las siguientes 
 Se proporciona un devcontainer para este tutorial. Si estás usando VSCode _y_ tienes docker instalado, puedes abrir esta carpeta en un _devcontainer_ y tener todo configurado para ti.
 Ver <https://code.visualstudio.com/docs/devcontainers/containers> para más información sobre devcontainers.
 
+## Usando GitHub Codespaces
+
+Si no quieres configurar nada localmente, puedes usar GitHub Codespaces para ejecutar este tutorial íntegramente en la nube. Simplemente haz un fork de este repositorio y ábrelo en un nuevo Codespace.
+
 ### Configuración de conexión a base de datos Postgres desde dentro del devcontainer
 
 Si estás usando el devcontainer, la base de datos Postgres puede ser accedida en `postgres:5432` con las mismas credenciales mencionadas anteriormente.
