@@ -264,6 +264,10 @@ Check the [documentation](https://dlthub.com/docs/general-usage/credentials/) fo
 
 ---
 
+![bg](img/mario_and_luigi.png)
+
+---
+
 ### Current state
 
 | id |   name    |       created_at       |       updated_at       |
