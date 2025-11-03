@@ -11,4 +11,10 @@ build_slides_en: ## Build slides PDF from markdown using Marp, in english
 	@marp --pdf --allow-local-files EN_slides.md -o slides_en.pdf
 
 serve_slides_en: ## Build slides PDF from markdown using Marp, in english
-	@marp --server --allow-local-files EN_slides.md
+	@marp --watch --preview --allow-local-files EN_slides.md
+
+build_slides_es: ## Build slides PDF from markdown using Marp, in spanish
+	@marp --pdf --allow-local-files ES_slides.md -o slides_es.pdf
+
+serve_slides_es: ## Build slides PDF from markdown using Marp, in spanish
+	@marp --watch --preview --allow-local-files ES_slides.md
