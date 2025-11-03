@@ -26,9 +26,7 @@ There are many alternatives to `dlt` that address the data loading tasks. The li
 
 ## Why `dlt`?
 
-!!! warning "That is like, your opinion, man"
-
-    ![youropinion](https://c.tenor.com/dlLdNF3Z-CUAAAAd/the-big-lebowski-thats-like-your-opinion-man.gif)
+![youropinion](https://c.tenor.com/dlLdNF3Z-CUAAAAd/the-big-lebowski-thats-like-your-opinion-man.gif)
 
 ### Less is more
 

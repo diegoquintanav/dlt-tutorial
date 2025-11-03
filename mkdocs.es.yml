@@ -2,13 +2,15 @@ site_name: DLT workshop
 site_description: |
   Workshop to extract data using DLT (dlthub.com)
 site_author: Diego Quintana
-docs_dir: docs
+docs_dir: docs/es
 repo_url: https://github.com/diegoquintana/dlt-tutorial
-edit_uri: edit/main/docs/
+edit_uri: edit/main/docs/es/
+site_dir: site/es
 
 theme:
   # logo: assets/images/logo.png
   # favicon: assets/images/favicon.svg
+  language: es
   name: material
   features:
     - content.action.edit
@@ -65,20 +67,34 @@ extra_css:
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
 
 plugins:
-  - search
+  - search:
+      lang:
+        - en
+        - es
   - git-revision-date-localized
 
+extra:
+  alternate:
+    # Switch to English
+    - name: English
+      link: /en/
+      lang: en
+    # Switch to Spanish
+    - name: Español
+      link: /es/
+      lang: es
+
 nav:
-  - Home: index.md
-  - Introduction: 0-introduction.md
-  - Getting Started: 1-getting-started.md
-  - "Part 1: Simple Pipeline with duckdb":
-      - Sample Pipeline: 2-our-first-pipeline.md
-      - Sources and Resources: 3-sources-and-resources.md
-  - "Part 2: Incremental Pipeline with Postgres":
-      - Introduction to incremental loading: 4-switching-to-postgres.md
-      - Trying out incremental loading: 5-incremental-loading.md
-  - "Part 3: Other features":
-      - Schema Validation: 6-schema-validation.md
-  - "Wrapping Up":
-      - Conclusions and next steps: 7-next-steps.md
+  - Inicio: index.md
+  - Introducción: 0-introduction.md
+  - "Primeros pasos": 1-getting-started.md
+  - "Parte 1: Pipeline simple con DuckDB":
+      - "Ejemplo de pipeline": 2-our-first-pipeline.md
+      - "Fuentes y recursos": 3-sources-and-resources.md
+  - "Parte 2: Pipeline incremental con Postgres":
+      - "Introducción a la carga incremental": 4-switching-to-postgres.md
+      - "Probando la carga incremental": 5-incremental-loading.md
+  - "Parte 3: Otras características":
+      - "Validación de esquema": 6-schema-validation.md
+  - "Cierre":
+      - "Conclusiones y siguientes pasos": 7-next-steps.md

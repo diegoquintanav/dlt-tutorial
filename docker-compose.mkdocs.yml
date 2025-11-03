@@ -8,7 +8,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./mkdocs.yml:/docs/mkdocs.yml
+      - ./mkdocs.en.yml:/docs/mkdocs.en.yml
+      - ./mkdocs.es.yml:/docs/mkdocs.es.yml
       - ./docs:/docs/docs # needed for mkdocs serve
       - ./README.md:/docs/README.md
       - ./.git:/docs/.git:ro # needed for plugins
@@ -17,3 +18,5 @@ services:
       - "serve"
       - "--dev-addr=0.0.0.0:8000"
       - "--livereload"
+      - "--config-file"
+      - "mkdocs.en.yml"
