@@ -1,0 +1,1492 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Workshop to load data using DLT (dlthub.com)
+">
+      
+      
+        <meta name="author" content="Diego Quintana">
+      
+      
+        <link rel="canonical" href="https://diegoquintanav.github.io/dlt-tutorial/es/5-incremental-loading/">
+      
+      
+        <link rel="prev" href="../4-switching-to-postgres/">
+      
+      
+        <link rel="next" href="../6-schema-validation/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Probando la carga incremental - DLT workshop</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-gray" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#probando-carga-incremental" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href=".." title="DLT workshop" class="md-header__button md-logo" aria-label="DLT workshop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DLT workshop
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Probando la carga incremental
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-gray" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Seleccionar idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="https://diegoquintanav.github.io/dlt-tutorial/en/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="https://diegoquintanav.github.io/dlt-tutorial/es/" hreflang="es" class="md-select__link">
+              Español
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/diegoquintana/dlt-tutorial" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="DLT workshop" class="md-nav__button md-logo" aria-label="DLT workshop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    DLT workshop
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/diegoquintana/dlt-tutorial" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inicio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../0-introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introducción
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1-getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Primeros pasos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Parte 1: Pipeline simple con DuckDB
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Parte 1: Pipeline simple con DuckDB
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2-our-first-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ejemplo de pipeline
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3-sources-and-resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Fuentes y recursos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Parte 2: Pipeline incremental con Postgres
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Parte 2: Pipeline incremental con Postgres
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4-switching-to-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introducción a la carga incremental
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Probando la carga incremental
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Probando la carga incremental
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#una-pequena-desviacion-habilitando-refrescado-completo-a-traves-de-argumentos-de-linea-de-comandos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Una pequeña desviación: habilitando refrescado completo a través de argumentos de línea de comandos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solo-agregar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solo agregar
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solo agregar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agregar-con-clave-primaria-incremental" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agregar con clave primaria incremental
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estrategias-de-fusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estrategias de fusión
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estrategias de fusión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#upsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slowly-changing-dimensions-scd2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Slowly Changing Dimensions (SCD2)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumiendo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resumiendo
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Parte 3: Otras características
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Parte 3: Otras características
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../6-schema-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validación de esquema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Cierre
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Cierre
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../7-next-steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Conclusiones y siguientes pasos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#una-pequena-desviacion-habilitando-refrescado-completo-a-traves-de-argumentos-de-linea-de-comandos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Una pequeña desviación: habilitando refrescado completo a través de argumentos de línea de comandos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solo-agregar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solo agregar
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solo agregar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agregar-con-clave-primaria-incremental" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agregar con clave primaria incremental
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estrategias-de-fusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estrategias de fusión
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estrategias de fusión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#upsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slowly-changing-dimensions-scd2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Slowly Changing Dimensions (SCD2)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumiendo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resumiendo
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/diegoquintana/dlt-tutorial/edit/main/docs/es/5-incremental-loading.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/diegoquintana/dlt-tutorial/raw/main/docs/es/5-incremental-loading.md" title="Ver código fuente de esta página" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+    </a>
+  
+
+
+<h1 id="probando-carga-incremental">Probando carga incremental</h1>
+<h2 id="una-pequena-desviacion-habilitando-refrescado-completo-a-traves-de-argumentos-de-linea-de-comandos">Una pequeña desviación: habilitando refrescado completo a través de argumentos de línea de comandos</h2>
+<p>Exploraremos estrategias de carga incremental en las siguientes secciones, pero primero, vamos a necesitar una manera fácil de decirle a dlt cómo manejar refrescados completos para que podamos comenzar rápidamente desde cero, si algo sale mal.</p>
+<p>La estrategia de <a href="https://dlthub.com/docs/api_reference/dlt/pipeline/configuration#refresh">Refresh</a> le dice a dlt si debe eliminar datos existentes en el destino antes de cargar nuevos datos. Las estrategias disponibles son, <a href="https://dlthub.com/docs/api_reference/dlt/pipeline#run">según la documentación</a>:</p>
+<ul>
+<li><code>drop_sources</code> - Eliminar tablas y estado de fuente y recurso para todas las fuentes actualmente siendo procesadas en métodos run o extract del pipeline. (Nota: la historia del esquema es borrada)</li>
+<li><code>drop_resources</code>- Eliminar tablas y estado de recurso para todos los recursos siendo procesados. El estado a nivel de fuente no es modificado. (Nota: la historia del esquema es borrada)</li>
+<li><code>drop_data</code> - Limpiar todos los datos y estado de recurso para todos los recursos siendo procesados. El esquema no es modificado.</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">dlt</span><span class="o">.</span><span class="n">pipeline</span><span class="p">(</span>
+        <span class="n">pipeline_name</span><span class="o">=</span><span class="s2">&quot;sample_pipeline_postgres&quot;</span><span class="p">,</span>
+        <span class="n">destination</span><span class="o">=</span><span class="n">dlt</span><span class="o">.</span><span class="n">destinations</span><span class="o">.</span><span class="n">postgres</span><span class="p">,</span>
+        <span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;sample_data&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting pipeline...&quot;</span><span class="p">)</span>
+    <span class="n">load_info</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="n">sample_data</span><span class="p">,</span>
+        <span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;samples&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="n">refresh</span><span class="o">=</span><span class="s2">&quot;drop_sources&quot;</span><span class="p">,</span>
+</span>    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Para habilitar esta opción podemos modificar nuestro script de pipeline para incluir el parámetro <code>refresh</code> cuando creamos el pipeline.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="hll"><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">():</span>
+</span><span class="hll">    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sample DLT Pipeline with Append&quot;</span><span class="p">)</span>
+</span><span class="hll">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+</span><span class="hll">        <span class="s2">&quot;--refresh&quot;</span><span class="p">,</span>
+</span><span class="hll">        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+</span><span class="hll">        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Refresh the data in the destination (if applicable)&quot;</span><span class="p">,</span>
+</span><span class="hll">    <span class="p">)</span>
+</span><span class="hll">    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="hll">    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
+</span><span class="hll">    <span class="n">should_refresh</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">refresh</span>
+</span>    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">dlt</span><span class="o">.</span><span class="n">pipeline</span><span class="p">(</span>
+        <span class="n">pipeline_name</span><span class="o">=</span><span class="s2">&quot;sample_pipeline_postgres&quot;</span><span class="p">,</span>
+        <span class="n">destination</span><span class="o">=</span><span class="n">dlt</span><span class="o">.</span><span class="n">destinations</span><span class="o">.</span><span class="n">postgres</span><span class="p">,</span>
+        <span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;sample_data&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running pipeline...&quot;</span><span class="p">)</span>
+    <span class="n">refresh_mode</span><span class="p">:</span> <span class="n">TRefreshMode</span> <span class="o">=</span> <span class="s2">&quot;drop_sources&quot;</span>
+
+    <span class="k">if</span> <span class="n">should_refresh</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Refreshing data in the destination.&quot;</span><span class="p">)</span>
+
+    <span class="n">load_info</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="n">sample_data</span><span class="p">,</span>
+        <span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;samples&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="n">refresh</span><span class="o">=</span><span class="n">refresh_mode</span> <span class="k">if</span> <span class="n">should_refresh</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span>    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>De esta manera, cuando ejecutemos nuestro pipeline con la bandera <code>--refresh</code>, eliminará datos existentes en el destino antes de cargar nuevos datos.</p>
+<p>También implementamos el parámetro para simular cargar nuevos datos en las siguientes secciones. Modificamos nuestro <code>resource</code> basado en esta bandera.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sample_data</span><span class="p">(</span><span class="n">use_new_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="hll">    <span class="n">my_data</span> <span class="o">=</span> <span class="p">[</span>
+</span>        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Mr. Mario&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-09 14:40:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-09 14:50:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;ingested_at&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;script_name&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Mr. Luigi&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;8c804ede-f8ae-409e-964d-9e355a3094e0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-08 16:15:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-08 16:50:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;ingested_at&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;script_name&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+
+<span class="hll">    <span class="k">if</span> <span class="n">use_new_data</span><span class="p">:</span>
+</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using new data for this run.&quot;</span><span class="p">)</span>
+        <span class="n">my_data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Jumpman&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-09 14:40:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-10 11:50:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;ingested_at&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                    <span class="s2">&quot;script_name&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Ms. Peach&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;1a73f32f-9144-4318-9a00-4437bde41627&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-12 13:15:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-10-13 13:50:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;ingested_at&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                    <span class="s2">&quot;script_name&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">my_data</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">item</span>
+</code></pre></div></td></tr></table></div>
+<p>Nuestra nueva interfaz de línea de comandos se ve así:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/4_sample_pipeline_append.py<span class="w"> </span>--help
+usage:<span class="w"> </span>4_sample_pipeline_append.py<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>--refresh<span class="o">]</span>
+
+Sample<span class="w"> </span>DLT<span class="w"> </span>Pipeline<span class="w"> </span>with<span class="w"> </span>Append
+
+options:
+<span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">  </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
+<span class="w">  </span>--refresh<span class="w">   </span>Refresh<span class="w"> </span>the<span class="w"> </span>data<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>destination<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>applicable<span class="o">)</span>
+</code></pre></div>
+<p>y acepta un parámetro a través del cual podemos simular cargar nuevos datos:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">USE_NEW_DATA</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>python<span class="w"> </span>dlt_tutorial/4_sample_pipeline_append.py
+</code></pre></div>
+<h2 id="solo-agregar">Solo agregar</h2>
+<p>Ahora puedes ejecutar el pipeline con la bandera <code>--refresh</code> para comenzar desde cero:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/4_sample_pipeline_append.py<span class="w"> </span>--refresh
+Running<span class="w"> </span>pipeline...
+Custom<span class="w"> </span>parameter<span class="w"> </span>value:<span class="w"> </span>foo
+Pipeline<span class="w"> </span>sample_pipeline_postgres<span class="w"> </span>load<span class="w"> </span>step<span class="w"> </span>completed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">0</span>.09<span class="w"> </span>seconds
+<span class="m">1</span><span class="w"> </span>load<span class="w"> </span>package<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>were<span class="w"> </span>loaded<span class="w"> </span>to<span class="w"> </span>destination<span class="w"> </span>postgres<span class="w"> </span>and<span class="w"> </span>into<span class="w"> </span>dataset<span class="w"> </span>sample_data
+The<span class="w"> </span>postgres<span class="w"> </span>destination<span class="w"> </span>used<span class="w"> </span>postgresql://postgres:***@localhost:5555/postgres<span class="w"> </span>location<span class="w"> </span>to<span class="w"> </span>store<span class="w"> </span>data
+Load<span class="w"> </span>package<span class="w"> </span><span class="m">1762043727</span>.4561055<span class="w"> </span>is<span class="w"> </span>LOADED<span class="w"> </span>and<span class="w"> </span>contains<span class="w"> </span>no<span class="w"> </span>failed<span class="w"> </span><span class="nb">jobs</span>
+Done
+</code></pre></div>
+<p>y ejecutarlo otra vez sin la bandera <code>--refresh</code> para agregar nuevos datos:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/4_sample_pipeline_append.py<span class="w"> </span>--new-data
+Running<span class="w"> </span>pipeline...
+Custom<span class="w"> </span>parameter<span class="w"> </span>value:<span class="w"> </span>foo
+Pipeline<span class="w"> </span>sample_pipeline_postgres<span class="w"> </span>load<span class="w"> </span>step<span class="w"> </span>completed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">0</span>.08<span class="w"> </span>seconds
+<span class="m">1</span><span class="w"> </span>load<span class="w"> </span>package<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>were<span class="w"> </span>loaded<span class="w"> </span>to<span class="w"> </span>destination<span class="w"> </span>postgres<span class="w"> </span>and<span class="w"> </span>into<span class="w"> </span>dataset<span class="w"> </span>sample_data
+The<span class="w"> </span>postgres<span class="w"> </span>destination<span class="w"> </span>used<span class="w"> </span>postgresql://postgres:***@localhost:5555/postgres<span class="w"> </span>location<span class="w"> </span>to<span class="w"> </span>store<span class="w"> </span>data
+Load<span class="w"> </span>package<span class="w"> </span><span class="m">1762044000</span>.123456<span class="w"> </span>is<span class="w"> </span>LOADED<span class="w"> </span>and<span class="w"> </span>contains<span class="w"> </span>no<span class="w"> </span>failed<span class="w"> </span><span class="nb">jobs</span>
+Done
+</code></pre></div>
+<p>Puedes verificar el contenido de la tabla <code>sample_data</code> en Postgres para ver los resultados:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">sample_data</span><span class="p">.</span><span class="n">samples</span><span class="p">;</span>
+</code></pre></div>
+<details class="question">
+<summary>¿Qué pasa si ejecutamos el pipeline múltiples veces sin la bandera <code>--refresh</code>?</summary>
+<p>Cada vez que ejecutemos el pipeline, nuevos datos serán agregados a los datos existentes en el destino. Esto es porque estamos usando la estrategia de carga por defecto <code>append</code>, que agrega nuevos registros a la tabla existente sin modificar o eliminar registros existentes.</p>
+<div class="highlight"><pre><span></span><code> id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |    metadata__script_name    |    _dlt_load_id    |    _dlt_id     
+----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+-----------------------------+--------------------+----------------
+  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:30:16.036039+00 | 4_sample_pipeline_append.py | 1762119016.0306315 | pJA1hF4HneOUbw
+  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:30:16.036077+00 | 4_sample_pipeline_append.py | 1762119016.0306315 | UxcgfhkMgMleKg
+  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:30:20.517005+00 | 4_sample_pipeline_append.py | 1762119020.5093243 | HMDNsEtH+RBPXQ
+  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:30:20.517057+00 | 4_sample_pipeline_append.py | 1762119020.5093243 | SbekuWD7fosP1Q
+(4 rows)
+</code></pre></div>
+</details>
+<h3 id="agregar-con-clave-primaria-incremental">Agregar con clave primaria incremental</h3>
+<p>En nuestro ejemplo anterior, pudimos agregar nuevos datos al destino, pero no teníamos una manera de identificar únicamente cada registro. Esto puede llevar a registros duplicados si los mismos datos son cargados múltiples veces. Una alternativa es usar una clave primaria incremental para identificar únicamente cada registro.</p>
+<p>Esto puede hacerse en dos pasos:</p>
+<ol>
+<li>
+<p>Modificar el decorador del recurso para especificar la columna <code>id</code> como clave primaria.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="hll"><span class="nd">@dlt</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">write_disposition</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">)</span>
+</span><span class="k">def</span><span class="w"> </span><span class="nf">sample_data</span><span class="p">(</span><span class="n">use_new_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</code></pre></div></td></tr></table></div>
+</li>
+<li>
+<p>Aplicar pistas al recurso para especificar que la columna <code>id</code> debe ser tratada como una clave primaria incremental. <code>dlt</code> permite esto usando el método <code>apply_hints</code> en el recurso.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="c1"># add unique and incremental primary key on &quot;id&quot; column</span>
+<span class="hll">    <span class="n">hinted_data</span> <span class="o">=</span> <span class="n">sample_data</span><span class="o">.</span><span class="n">apply_hints</span><span class="p">(</span><span class="n">incremental</span><span class="o">=</span><span class="n">dlt</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">incremental</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="n">load_info</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+</span><span class="hll">        <span class="n">hinted_data</span><span class="p">,</span>
+</span>        <span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;samples&quot;</span><span class="p">,</span>
+<span class="hll">        <span class="n">refresh</span><span class="o">=</span><span class="n">refresh_mode</span> <span class="k">if</span> <span class="n">should_refresh</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span>    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Ver más sobre <a href="https://dlthub.com/docs/general-usage/resource#define-schema">pistas de esquema en la documentación</a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">la pista incremental solo filtra de datos entrantes</p>
+<p><code>dlt.sources.incremental</code> es recomendado cuando quieres reducir la cantidad de datos extraídos de tu fuente seleccionando solo datos nuevos o actualizados desde tu última extracción de datos.</p>
+</div>
+<p>Ahora puedes ejecutar el pipeline modificado con la bandera <code>--refresh</code> para comenzar desde cero:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/4b_sample_pipeline_append_pk.py<span class="w"> </span>--refresh
+<span class="c1"># salida omitida por brevedad</span>
+</code></pre></div>
+<p>y ejecutarlo otra vez <strong>sin</strong> la bandera <code>--refresh</code> para agregar nuevos datos:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/4b_sample_pipeline_append_pk.py
+<span class="c1"># salida omitida por brevedad</span>
+<span class="hll"><span class="m">0</span><span class="w"> </span>load<span class="w"> </span>package<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>were<span class="w"> </span>loaded<span class="w"> </span>to<span class="w"> </span>destination<span class="w"> </span>postgres<span class="w"> </span>and<span class="w"> </span>into<span class="w"> </span>dataset<span class="w"> </span>None
+</span>The<span class="w"> </span>postgres<span class="w"> </span>destination<span class="w"> </span>used<span class="w"> </span>postgresql://postgres:***@localhost:5555/postgres<span class="w"> </span>location<span class="w"> </span>to<span class="w"> </span>store<span class="w"> </span>data
+Done
+</code></pre></div></td></tr></table></div>
+<p>Verás que no se agregaron nuevos registros a la tabla <code>sample_data</code>. Puedes verificar el contenido de la tabla <code>sample_data</code> en Postgres para ver los resultados:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">sample_data</span><span class="p">.</span><span class="n">samples</span><span class="p">;</span>
+</code></pre></div>
+<details class="question">
+<summary>¿Qué pasa si ejecutamos el pipeline múltiples veces sin la bandera <code>--refresh</code>?</summary>
+<p>Cada vez que ejecutemos el pipeline, nuevos datos serán agregados a los datos existentes en el destino. Sin embargo, dado que hemos especificado la columna <code>id</code> como clave primaria, <code>dlt</code> asegurará que no haya registros duplicados basados en esta clave. Si un registro con el mismo <code>id</code> ya existe en el destino, los datos entrantes con el mismo <code>id</code> serán descartados.</p>
+</details>
+<p>Intenta ejecutar el pipeline ahora pasando la variable de entorno <code>USE_NEW_DATA=1</code> para simular cargar nuevos datos:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">USE_NEW_DATA</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>python<span class="w"> </span>dlt_tutorial/4b_sample_pipeline_append_pk.py
+<span class="c1"># salida omitida por brevedad</span>
+</code></pre></div>
+<details class="question">
+<summary>¿Cuál es el resultado de ejecutar el pipeline con <code>USE_NEW_DATA=1</code>?</summary>
+<p>Cuando ejecutas el pipeline con <code>USE_NEW_DATA=1</code>, la función del recurso genera un nuevo conjunto de datos que incluye registros con valores <code>id</code> que ya existen en el destino. Sin embargo, dado que hemos especificado la columna <code>id</code> como clave primaria y aplicado la pista incremental, <code>dlt</code> descartará cualquier registro entrante que tenga un <code>id</code> que ya existe en el destino. Como resultado, solo nuevos registros con valores <code>id</code> únicos serán agregados al destino.</p>
+<div class="highlight"><pre><span></span><code> id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |      metadata__script_name      |    _dlt_load_id    |    _dlt_id     
+----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+---------------------------------+--------------------+----------------
+  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 15:23:52.179837+00 | 4b_sample_pipeline_append_pk.py | 1762107832.1758425 | 5kO1pi9oN0z/vQ
+  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 15:23:52.179866+00 | 4b_sample_pipeline_append_pk.py | 1762107832.1758425 | BpMmoBJH+6WA/A
+  3 | Ms. Peach | 1a73f32f-9144-4318-9a00-4437bde41627 | 2025-10-12 13:15:00+00 | 2025-10-13 13:50:00+00 | 2025-11-02 15:24:00.04396+00  | 4b_sample_pipeline_append_pk.py | 1762107840.0396352 | 4ZUmjQ7Pt9N/uQ
+(3 rows)
+</code></pre></div>
+</details>
+<h2 id="estrategias-de-fusion">Estrategias de fusión</h2>
+<p><code>dlt</code> también soporta estrategias de <code>merge</code>, que te permiten actualizar registros existentes en el destino basándose en una clave especificada.</p>
+<p>La disposición de escritura merge puede ser usada con tres estrategias diferentes:</p>
+<ol>
+<li><code>delete-insert</code>: La estrategia delete-insert carga datos a un conjunto de datos de staging, deduplica los datos de staging si se proporciona una primary_key, elimina los datos del destino usando merge_key y primary_key, y luego inserta los nuevos registros.</li>
+<li><code>upsert</code>: actualizar registro si la clave existe en la tabla objetivo, o insertar registro si la clave no existe en la tabla objetivo</li>
+<li><code>scd2</code>: Estrategia Slowly Changing Dimensions tipo 2, que rastrea cambios históricos en datos creando nuevos registros para cada cambio mientras preserva registros anteriores. Agregará una nueva columna para rastrear el período de validez de cada registro.</li>
+</ol>
+<p>Para implementar estas estrategias, necesitamos modificar el parámetro <code>write_disposition</code> cuando creamos el pipeline.</p>
+<h3 id="upsert">Upsert</h3>
+<p>Podemos eliminar el método <code>apply_hints</code> ya que no estamos usando una clave primaria incremental en este ejemplo.</p>
+<p>Si queremos usar la estrategia <code>upsert</code>, podemos ejecutar el pipeline modificado con la bandera <code>--refresh</code> para comenzar desde cero:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>@dlt.resource(
+    name=&quot;sample_data&quot;,
+    primary_key=&quot;id&quot;,
+<span class="hll">    write_disposition={&quot;disposition&quot;: &quot;merge&quot;, &quot;strategy&quot;: &quot;upsert&quot;},
+</span>)
+def sample_data(use_new_data: bool = False) -&gt; Generator[dict, None, None]:
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/5_sample_pipeline_merge_upsert.py<span class="w"> </span>--refresh
+<span class="c1"># salida omitida por brevedad</span>
+</code></pre></div>
+<p>y ejecutarlo otra vez sin la bandera <code>--refresh</code> para hacer upsert de nuevos datos:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/5_sample_pipeline_merge_upsert.py
+<span class="c1"># salida omitida por brevedad</span>
+</code></pre></div>
+<p>Deberías ver que no se agregaron registros a la tabla <code>sample_data</code>. Puedes verificar el contenido de la tabla <code>sample_data</code> en Postgres para ver los resultados:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">sample_data</span><span class="p">;</span>
+</code></pre></div>
+<p>Intenta ahora ejecutar el pipeline pasando la variable de entorno <code>USE_NEW_DATA=1</code> para simular cargar nuevos datos:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">USE_NEW_DATA</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>python<span class="w"> </span>dlt_tutorial/5_sample_pipeline_merge_upsert.py
+<span class="c1"># salida omitida por brevedad</span>
+</code></pre></div>
+<details class="question">
+<summary>¿Cuál es el resultado de ejecutar el pipeline con <code>USE_NEW_DATA=1</code>?</summary>
+<p>Cuando ejecutas el pipeline con <code>USE_NEW_DATA=1</code>, la función del recurso genera un nuevo conjunto de datos que incluye registros con valores <code>id</code> que ya existen en el destino. Dado que estamos usando la estrategia <code>upsert</code>, <code>dlt</code> actualizará registros existentes en el destino si un registro con el mismo <code>id</code> ya existe, o insertará nuevos registros si el <code>id</code> no existe.</p>
+<div class="highlight"><pre><span></span><code>postgres=# select * from sample_data.samples;
+ id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |       metadata__script_name       |    _dlt_load_id    |_dlt_id
+----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+-----------------------------------+--------------------+----------------
+  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:37:17.901958+00 | 5_sample_pipeline_merge_upsert.py | 1762119437.8970616 | M6/KlLzJ2FeV/w
+  1 | Jumpman   | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-10 11:50:00+00 | 2025-11-02 18:37:23.170644+00 | 5_sample_pipeline_merge_upsert.py | 1762119443.1653655 | z5jIxXIbUnmbKw
+  3 | Ms. Peach | 1a73f32f-9144-4318-9a00-4437bde41627 | 2025-10-12 13:15:00+00 | 2025-10-13 13:50:00+00 | 2025-11-02 18:37:23.170657+00 | 5_sample_pipeline_merge_upsert.py | 1762119443.1653655 | hKdQ/VhGat+Pgw
+(3 rows)
+</code></pre></div>
+</details>
+<h3 id="slowly-changing-dimensions-scd2">Slowly Changing Dimensions (SCD2)</h3>
+<p>De la misma manera, podemos implementar la estrategia <code>scd2</code> modificando el parámetro <code>write_disposition</code> cuando creamos el pipeline.</p>
+<p>Dado una <strong>coincidencia</strong> entre filas entrantes y existentes en alguna <strong>clave</strong>, dejar la fila objetivo existente e "<strong>INSERT</strong>" un nuevo registro de los datos entrantes, usando algunas columnas auxiliares.</p>
+<p>Esto permite rastrear la validez del último valor, pero toma más espacio en disco.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dlt</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sample_data&quot;</span><span class="p">,</span>
+    <span class="n">primary_key</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="hll">    <span class="n">write_disposition</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;disposition&quot;</span><span class="p">:</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;scd2&quot;</span><span class="p">},</span>
+</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_data</span><span class="p">(</span><span class="n">use_new_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</code></pre></div></td></tr></table></div>
+<p>En la práctica, <code>dlt</code> calculará una clave sustituta para cada registro basada en la clave primaria y el hash del contenido del registro.</p>
+<p>Cuando se encuentra un registro con la misma clave primaria pero contenido diferente, se inserta un nuevo registro con una nueva clave sustituta, mientras que el registro existente se marca como expirado.</p>
+<p>Puedes ejecutar el pipeline modificado con la bandera <code>--refresh</code> para comenzar desde cero:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/6_sample_pipeline_merge_scd2.py<span class="w"> </span>--refresh
+<span class="c1"># salida omitida por brevedad</span>
+</code></pre></div>
+<p>y ejecutarlo otra vez sin la bandera <code>--refresh</code> para hacer upsert de nuevos datos:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>dlt_tutorial/6_sample_pipeline_merge_scd2.py
+<span class="c1"># salida omitida por brevedad  </span>
+</code></pre></div>
+<p>Dado que nuestros datos tienen una columna de metadatos llamada <code>metadata__ingested_at</code> que está basada en la marca de tiempo de ejecución, <code>dlt</code> calculará una clave sustituta diferente cada vez que se inserte un registro.</p>
+<p>Esto efectivamente insertará nuevas filas cada vez que ejecutemos el pipeline, y marcará las filas anteriores como expiradas.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">postgres=#</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">sample_data</span><span class="mf">.</span><span class="n">samples</span><span class="p">;</span>
+<span class="go">        _dlt_valid_from        |        _dlt_valid_to         | id |   name    |                 uuid                 |       created_at       |       updated_at       |     metadata__ingested_at     |      metadata__script_name      |    _dlt_load_id    |    _dlt_id     </span>
+<span class="go">-------------------------------+------------------------------+----+-----------+--------------------------------------+------------------------+------------------------+-------------------------------+---------------------------------+--------------------+----------------</span>
+<span class="go"> 2025-11-02 21:43:43.942528+00 | 2025-11-02 21:46:07.88226+00 |  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:43:43.948416+00 | 6_sample_pipeline_merge_scd2.py | 1762119823.9425282 | 2PDbMZWckGbEzQ</span>
+<span class="go"> 2025-11-02 21:43:43.942528+00 | 2025-11-02 21:46:07.88226+00 |  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:43:43.94847+00  | 6_sample_pipeline_merge_scd2.py | 1762119823.9425282 | zFQAhPCh1tzs2A</span>
+<span class="go"> 2025-11-02 21:46:07.88226+00  |                              |  1 | Mr. Mario | a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc | 2025-10-09 14:40:00+00 | 2025-10-09 14:50:00+00 | 2025-11-02 18:46:07.887446+00 | 6_sample_pipeline_merge_scd2.py | 1762119967.8822596 | I6WPZYVDBhg9zQ</span>
+<span class="go"> 2025-11-02 21:46:07.88226+00  |                              |  2 | Mr. Luigi | 8c804ede-f8ae-409e-964d-9e355a3094e0 | 2025-10-08 16:15:00+00 | 2025-10-08 16:50:00+00 | 2025-11-02 18:46:07.887478+00 | 6_sample_pipeline_merge_scd2.py | 1762119967.8822596 | CrpVG8J0ezqiQg</span>
+<span class="go">(4 rows)</span>
+</code></pre></div>
+<details class="question">
+<summary>¿Cómo sabemos cuál es el valor más reciente cuando usamos SCD2?</summary>
+<p>Cuando usas la estrategia SCD2, cada registro tiene dos columnas adicionales: <code>_dlt_valid_from</code> y <code>_dlt_valid_to</code>. La columna <code>_dlt_valid_from</code> indica la marca de tiempo cuando el registro se volvió válido, mientras que la columna <code>_dlt_valid_to</code> indica la marca de tiempo cuando el registro fue reemplazado por una versión más nueva.</p>
+<p>Para encontrar el valor más reciente para una clave primaria dada, puedes consultar registros donde la columna <code>_dlt_valid_to</code> es <code>NULL</code>, ya que esto indica que el registro es actualmente válido.</p>
+<p>Por ejemplo, para encontrar los registros más recientes en la tabla <code>sample_data.samples</code>, puedes ejecutar la siguiente consulta SQL:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">sample_data</span><span class="p">.</span><span class="n">samples</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">_dlt_valid_to</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span>
+</code></pre></div>
+<p>Esto devolverá solo los registros que son actualmente válidos, permitiéndote ver los valores más recientes para cada clave primaria.</p>
+</details>
+<details class="question">
+<summary>¿Qué pasa si ejecutas el pipeline usando la variable de entorno <code>USE_NEW_DATA=1</code>?</summary>
+<p>En los nuevos datos verás que <code>Mr. Luigi</code> no está presente. Esto significa que cuando ejecutes el pipeline con <code>USE_NEW_DATA=1</code>, este registro será marcado como expirado en la tabla de destino (Un <em>hard delete</em>), y un nuevo registro para <code>Jumpman</code> será insertado.</p>
+</details>
+<h2 id="resumiendo">Resumiendo</h2>
+<p>Hemos explorado diferentes estrategias de carga incremental usando <code>dlt</code>, incluyendo <code>append</code>, <code>upsert</code> y <code>SCD2</code>. Cada estrategia tiene sus propios casos de uso y beneficios, dependiendo de los requisitos de tu pipeline de datos.</p>
+<p><code>dlt</code> ofrece más estrategias y opciones para carga incremental. Refiere a la <a href="https://dlthub.com/docs/general-usage/incremental-loading">documentación de dlt</a> para más información sobre cómo implementar estas estrategias en tus pipelines de datos.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Última actualización">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="3 de noviembre de 2025 10:37:26 UTC">3 de noviembre de 2025</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Pie" >
+        
+          
+          <a href="../4-switching-to-postgres/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Introducción a la carga incremental">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Introducción a la carga incremental
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../6-schema-validation/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Validación de esquema">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Siguiente
+              </span>
+              <div class="md-ellipsis">
+                Validación de esquema
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "content.code.annotate", "navigation.footer", "navigation.sections"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../js/katex.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
