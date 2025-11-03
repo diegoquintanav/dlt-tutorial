@@ -2,10 +2,10 @@ import argparse
 import datetime as dt
 import logging
 from pathlib import Path
-from typing import Generator
 
 import dlt
 from dlt.pipeline import TRefreshMode
+from dlt.common.typing import TDataItems
 
 # Create a logger
 logger = logging.getLogger("dlt")
@@ -16,13 +16,42 @@ logger.setLevel(logging.INFO)
 
 # --8<-- [start:resource_decorator]
 # --8<-- [start:resource]
+# --8<-- [start:columns_and_hints]
 @dlt.resource(
     name="sample_data",
     primary_key="id",
-    write_disposition={"disposition": "merge", "strategy": "upsert"},
+    write_disposition="replace",
+    columns={
+        "id": {"data_type": "bigint"},
+        "name": {"data_type": "text"},
+        "uuid": {"data_type": "text"},
+        "created_at": {"data_type": "timestamp"},
+        "updated_at": {"data_type": "timestamp"},
+    },
+    nested_hints={
+        "metadata": dlt.mark.make_nested_hints(
+            columns=[
+                {
+                    "name": "ingested_at",
+                    "data_type": "timestamp",
+                },
+                {
+                    "name": "script_name",
+                    "data_type": "text",
+                },
+            ]
+        ),
+    },
+    # --8<-- [end:columns_and_hints]
+    schema_contract={
+        "tables": "evolve",
+        "columns": "freeze",
+        "data_type": "evolve",
+    },
 )
-def sample_data(use_new_data: bool = False) -> Generator[dict, None, None]:
+def sample_data() -> TDataItems:
     # --8<-- [end:resource_decorator]
+    # --8<-- [start:my_data]
     my_data = [
         {
             "id": 1,
@@ -47,36 +76,8 @@ def sample_data(use_new_data: bool = False) -> Generator[dict, None, None]:
             },
         },
     ]
+    # --8<-- [end:my_data]
 
-    # --8<-- [start:new_data]
-
-    if use_new_data:
-        print("Using new data for this run.")
-        my_data = [
-            {
-                "id": 1,
-                "name": "Jumpman",
-                "uuid": "a6d7b6dd-bcdb-422e-83eb-f53b2eb4f2cc",
-                "created_at": "2025-10-09 14:40:00",
-                "updated_at": "2025-10-10 11:50:00",
-                "metadata": {
-                    "ingested_at": dt.datetime.now().isoformat(),
-                    "script_name": Path(__file__).name,
-                },
-            },
-            {
-                "id": 3,
-                "name": "Ms. Peach",
-                "uuid": "1a73f32f-9144-4318-9a00-4437bde41627",
-                "created_at": "2025-10-12 13:15:00",
-                "updated_at": "2025-10-13 13:50:00",
-                "metadata": {
-                    "ingested_at": dt.datetime.now().isoformat(),
-                    "script_name": Path(__file__).name,
-                },
-            },
-        ]
-        # --8<-- [end:new_data]
     for item in my_data:
         yield item
 

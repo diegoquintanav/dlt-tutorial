@@ -41,7 +41,8 @@ def sample_data() -> Generator[dict, None, None]:
 
 # --8<-- [start:sample_source]
 @dlt.source
-def sample_source():
+def sample_source(my_custom_parameter: str = "foo"):
+    print(f"Custom parameter value: {my_custom_parameter}")
     yield sample_data
 
 

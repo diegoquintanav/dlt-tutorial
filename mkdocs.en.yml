@@ -1,0 +1,100 @@
+site_name: DLT workshop
+site_description: |
+  Workshop to extract data using DLT (dlthub.com)
+site_author: Diego Quintana
+docs_dir: docs/en
+repo_url: https://github.com/diegoquintana/dlt-tutorial
+edit_uri: edit/main/docs/en/
+site_dir: site/en
+
+theme:
+  # logo: assets/images/logo.png
+  # favicon: assets/images/favicon.svg
+  language: en
+  name: material
+  features:
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.code.annotate
+    - navigation.footer
+    - navigation.sections
+  icon:
+    edit: material/pencil
+    view: material/eye
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: light gray
+      accent: amber
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: amber
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+
+markdown_extensions:
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.magiclink
+  - pymdownx.snippets:
+      check_paths: true
+      base_path: ["."]
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_javascript:
+  - js/katex.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+
+plugins:
+  - search:
+      lang:
+        - en
+        - es
+  - git-revision-date-localized
+
+extra:
+  alternate:
+    # Switch to English
+    - name: English
+      link: /en/
+      lang: en
+    # Switch to Spanish
+    - name: Español
+      link: /es/
+      lang: es
+
+nav:
+  - Home: index.md
+  - Introduction: 0-introduction.md
+  - Getting Started: 1-getting-started.md
+  - "Part 1: Simple Pipeline with duckdb":
+      - Sample Pipeline: 2-our-first-pipeline.md
+      - Sources and Resources: 3-sources-and-resources.md
+  - "Part 2: Incremental Pipeline with Postgres":
+      - Introduction to incremental loading: 4-switching-to-postgres.md
+      - Trying out incremental loading: 5-incremental-loading.md
+  - "Part 3: Other features":
+      - Schema Validation: 6-schema-validation.md
+  - "Wrapping Up":
+      - Conclusions and next steps: 7-next-steps.md

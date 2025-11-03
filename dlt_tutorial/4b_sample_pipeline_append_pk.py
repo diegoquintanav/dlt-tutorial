@@ -1,26 +1,15 @@
 import argparse
 import datetime as dt
-import logging
 from pathlib import Path
 from typing import Generator
 
 import dlt
 from dlt.pipeline import TRefreshMode
 
-# Create a logger
-logger = logging.getLogger("dlt")
-
-# Set the log level
-logger.setLevel(logging.INFO)
-
 
 # --8<-- [start:resource_decorator]
 # --8<-- [start:resource]
-@dlt.resource(
-    name="sample_data",
-    primary_key="id",
-    write_disposition={"disposition": "merge", "strategy": "upsert"},
-)
+@dlt.resource(primary_key="id", write_disposition="append")
 def sample_data(use_new_data: bool = False) -> Generator[dict, None, None]:
     # --8<-- [end:resource_decorator]
     my_data = [
@@ -109,14 +98,16 @@ if __name__ == "__main__":
 
     if should_refresh:
         print("Refreshing data in the destination.")
+    # --8<-- [start:apply_hints]
+    # add unique and incremental primary key on "id" column
+    hinted_data = sample_data.apply_hints(incremental=dlt.sources.incremental("id"))
 
-    # --8<-- [start:pipeline_run]
     load_info = pipeline.run(
-        sample_data,
-        refresh=refresh_mode if should_refresh else None,
+        hinted_data,
         table_name="samples",
+        refresh=refresh_mode if should_refresh else None,
     )
-    # --8<-- [end:pipeline_run]
+    # --8<-- [end:apply_hints]
     # --8<-- [end:parse_args]
 
     print(load_info)

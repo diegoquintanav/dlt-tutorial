@@ -20,14 +20,17 @@ marp: true
 
 ## Why this tutorial
 
-- Many tutorials already exist
+- Many tutorials exist already
+  - <https://dlthub.com/docs/intro>
 - But
-  - Explanations on core concepts is not consistent
-  - Code style in examples is not consistent
+  - Explanations on **core concepts** is not consistent
+  - **Code style** in examples is _not_ consistent
 - I don't like _some_ things about `dlt`: room for improvement!
-  - Docs are very convoluted
-  - Marketing is at times very aggressive (perhaps that changed)
+  - Marketing feels aggressive at times (perhaps that changed)
   - Geared toward [LLMware](https://dlthub.com/docs/dlt-ecosystem/llm-tooling): I don't see the fit but I understand the trends.
+- But
+  - Feels like a lightweight framework that can replace a lot of boilerplate code
+  - Once you get past the initial learning curve, it is easy to use
 
 ---
 
@@ -48,9 +51,20 @@ marp: true
 - `dlt` breaks some of these principles in the documentation (seems to be a LLMWare trend tbh) -->
 - **In the face of ambiguity, refuse the temptation to guess**
   - Configuration are portrayed as strings (Seems to be in line with llmware trends)
-  - CLI does not help to reason about pipeline state. It _show_ things but it does not _explain_ them.
+  - CLI does not help to reason about pipeline state. It _shows_ things but it does not _explain_ them.
 - **There should be one-- and preferably only one --obvious way to do it**
   - Docs don't seem to agree in how something can be done: API style is different across examples, full imports and namespaces are missing, etc.
+
+---
+
+## Getting started
+
+- We are starting with a simple example that loads data from a generator into a `duckdb` database
+- We will evolve this example into a more complex one, as we cover more features
+- We will use `postgres` as a target at some point, to show how to configure credentials
+- We will use `devcontainer` to launch a reproducible environment
+- Go to the repository
+- Follow the instructions in the README to set up the environment
 
 ---
 
@@ -110,6 +124,27 @@ load_info = pipeline.run(
  },
 )
 ```
+
+---
+
+:warning: data passed to `dlt.pipeline` is not limited to generators. We can pass a list of dictionaries. We use a generator for efficiency.
+
+```python
+sample_data = [
+  {"id": 0, "name": "Mr. a", "random_field": uuid4()},
+  {"id": 1, "name": "Mr. b", "random_field": uuid4()},
+ ]
+
+load_info = pipeline.run(
+ sample_data,
+ table_name="samples",
+ write_disposition={
+  "disposition": "replace",
+ },
+)
+```
+
+---
 <!-- 
 ---
 Everything together should look like
@@ -151,7 +186,7 @@ if __name__ == "__main__":
 
 after running this with `python 1_sample_pipeline_basic.py`, we should end up with a database called `sample_pipeline.duckdb`
 
-:warning: Beware that duckdb does not allow for concurrent access. If you try to run the pipeline while having a client connected to the database, the pipeline will fail.
+:warning: Beware that duckdb does not allow for concurrent access. **If you try to run the pipeline while having a client connected to the database, the pipeline will fail.**
 
 ```bash
 $ duckdb sample_pipeline.duckdb "select * from information_schema.tables"

@@ -42,6 +42,11 @@ ENV PATH=${WORKDIR}/.venv/bin:$PATH \
 RUN groupadd --gid ${USER_GID} "${USERNAME}" && \
   useradd --uid ${USER_UID} --gid ${USER_GID} -m "${USERNAME}"
 
+# add dev utilities
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends iputils-ping git make postgresql && \
+  rm -rf /var/lib/apt/lists/*
+
 # ---------------------------- add code specifics ---------------------------- #
 
 # Copy everything to the container, we filter out what we don't need using .dockerignore
