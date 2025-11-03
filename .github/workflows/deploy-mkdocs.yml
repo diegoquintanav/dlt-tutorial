@@ -58,8 +58,8 @@ jobs:
           restore-keys: |
             mkdocs-material-
 
-      - name: Install dependencies
-        run: sudo apt-get install pngquant
+      # - name: Install dependencies
+      #   run: sudo apt-get install pngquant
 
       - name: Install Python dependencies
         run: |
@@ -102,16 +102,8 @@ jobs:
             echo "::warning title=Invalid file permissions automatically fixed::$line"
           done
 
-      - name: Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v4
+      - name: Deploy docs to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: site
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
-
-      - name: Save build cache
-        uses: actions/cache/save@v3
-        with:
-          key: mkdocs-material-${{ hashfiles('.cache/**') }}
-          path: .cache
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
