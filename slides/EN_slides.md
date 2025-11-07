@@ -65,7 +65,7 @@ There **are three or four** routes to install what's needed to get started with 
 
 ---
 
-## Simple example using `duckdb`
+## dlt treats dictionaries as records
 
 - At its most basic form, `dlt` takes in an iterable that produces dictionaries
 - And treats every dictionary as a row and inserts it into a `target`
@@ -160,7 +160,7 @@ def my_pandas_data_source():
 
 1. GO TO TUTORIAL
 2. EXECUTE `python dlt_tutorial/1_sample_pipeline_basic.py`
-3. CHECK DUCKDB CONTENTS WITH `sample_pipeline.duckdb -c "select * from sample_data.samples;"`
+3. CHECK DUCKDB CONTENTS WITH `duckdb sample_pipeline.duckdb -c "select * from sample_data.samples;"`
 4. That's it! These are the building blocks for what we'll be covering next
 
 ---

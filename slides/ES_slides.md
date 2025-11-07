@@ -11,10 +11,11 @@ marp: true
 - Pipeline ETL básico: Mover datos de A a B
 - La mayoría del código es repetitivo
 - Patrones de carga conocidos
-- No hay muchos frameworks de código abierto disponibles
+- Alternativas de código abierto disponibles
   - Airbyte: Funciona a través de UI y archivos YAML, necesita un servidor dedicado
   - Meltano: Funciona a través de CLI y archivos YAML, no es fácil de extender
   - `dlt`: Funciona a través de código Python
+- _Menos_ es más en este caso
 
 ---
 
@@ -65,7 +66,7 @@ Hay **tres o cuatro** rutas para instalar lo necesario para comenzar con este tu
 
 ---
 
-## Ejemplo simple usando `duckdb`
+## dlt usa diccionarios como registros
 
 - En su forma más básica, `dlt` toma un iterable que produce diccionarios
 - Y trata cada diccionario como una fila y lo inserta en un `destino`
@@ -238,10 +239,10 @@ Sin que lo sepas,
 
 ## Inyectando valores de configuración
 
-```python
+```diff
 @dlt.source
-def sample_source(my_custom_parameter: str = "foo"):
-    print(f"Custom parameter value: {my_custom_parameter}")
++def sample_source(my_custom_parameter: str = "foo"):
++   print(f"Custom parameter value: {my_custom_parameter}")
     yield sample_data
 ```
 
