@@ -1,0 +1,101 @@
+site_name: DLT workshop
+site_description: |
+  Workshop to load data using DLT (dlthub.com)
+site_author: Diego Quintana
+docs_dir: "docs/es"
+repo_url: https://github.com/diegoquintanav/dlt-tutorial
+edit_uri: "edit/main/docs/es/"
+site_dir: "site/es"
+site_url: https://diegoquintanav.github.io/dlt-tutorial/es/
+
+theme:
+  # logo: assets/images/logo.png
+  # favicon: assets/images/favicon.svg
+  language: es
+  name: material
+  features:
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.code.annotate
+    - navigation.footer
+    - navigation.sections
+  icon:
+    edit: material/pencil
+    view: material/eye
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: light gray
+      accent: amber
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: amber
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+
+markdown_extensions:
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.magiclink
+  - pymdownx.snippets:
+      check_paths: true
+      base_path: ["."]
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_javascript:
+  - js/katex.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
+
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+
+plugins:
+  - search:
+      lang:
+        - es
+  - git-revision-date-localized
+
+extra:
+  alternate:
+    # Switch to English
+    - name: English
+      link: https://diegoquintanav.github.io/dlt-tutorial/en/
+      lang: en
+    # Switch to Spanish
+    - name: Español
+      link: https://diegoquintanav.github.io/dlt-tutorial/es/
+      lang: es
+
+nav:
+  - "Inicio": index.md
+  - "Introducción": 0-introduction.md
+  - "Primeros pasos": 1-getting-started.md
+  - "Parte 1: Pipeline simple con DuckDB":
+      - "Ejemplo de pipeline": 2-our-first-pipeline.md
+      - "Fuentes y recursos": 3-sources-and-resources.md
+  - "Parte 2: Pipeline incremental con Postgres":
+      - "Introducción a la carga incremental": 4-switching-to-postgres.md
+      - "Probando la carga incremental": 5-incremental-loading.md
+  - "Parte 3: Otras características":
+      - "Validación de esquema": 6-schema-validation.md
+      - "Elementos internos de DLT": 6b-dlt-internals.md
+  - "Cierre":
+      - "Conclusiones y siguientes pasos": 7-next-steps.md

@@ -1,0 +1,5 @@
+FROM squidfunk/mkdocs-material:latest
+
+# Install dependencies
+COPY mkdocs-requirements.txt .
+RUN pip install --no-cache-dir -r mkdocs-requirements.txt
