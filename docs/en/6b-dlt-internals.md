@@ -119,3 +119,12 @@ tree  ~/.dlt/pipelines/sample_pipeline/
 
 12 directories, 9 files
 ```
+
+## Exploring the state visually
+
+You can use `dlt pipeline <PIPELINE_NAME>` to explore the state of the pipeline visually in your browser with a `marimo` or a `streamlit` interface.
+
+```bash
+dlt pipeline --list # lists available pipelines
+dlt pipeline <YOUR_PIPELINE_NAME> show [--streamlit]
+```

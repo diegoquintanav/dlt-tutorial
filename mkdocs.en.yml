@@ -96,5 +96,6 @@ nav:
       - Trying out incremental loading: 5-incremental-loading.md
   - "Part 3: Other features":
       - Schema Validation: 6-schema-validation.md
+      - Exploring `dlt` internals: 6b-dlt-internals.md
   - "Wrapping Up":
       - Conclusions and next steps: 7-next-steps.md

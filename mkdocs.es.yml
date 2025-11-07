@@ -96,5 +96,6 @@ nav:
       - "Probando la carga incremental": 5-incremental-loading.md
   - "Parte 3: Otras características":
       - "Validación de esquema": 6-schema-validation.md
+      - "Elementos internos de DLT": 6b-dlt-internals.md
   - "Cierre":
       - "Conclusiones y siguientes pasos": 7-next-steps.md

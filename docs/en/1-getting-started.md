@@ -94,9 +94,38 @@ You'll need this connection string, and we will see how to use it in the next se
 A devcontainer is provided for this tutorial. If you are using VSCode _and_ have docker installed, you can open this folder in a _devcontainer_and have everything set up for you.
 See <https://code.visualstudio.com/docs/devcontainers/containers> for more information on devcontainers.
 
-## Use GitHub Codespaces
+## Using a Codespaces environment
 
-If you don't want to set up anything locally, you can use GitHub Codespaces to run this tutorial entirely in the cloud. Simply fork this repository and open it in a new Codespace.
+Fork this repository to your own GitHub account. Then, you can create a Codespace directly from the GitHub web interface by clicking on the green "Code" button and selecting "Open with Codespaces" > "New codespace".
+
+Wait for the Codespace to be created and initialized. This may take a few minutes.
+
+Once the Codespace is ready, you can open a terminal and run the following commands to make sure all dependencies are installed:
+
+### Checking postgres connection
+
+```bash
+bash # start a bash shell
+ping postgres # test connectivity to the Postgres service
+^C # stop the ping command
+```
+
+Open a `psql` session to the Postgres database with `make postgres.<devcontainer|host>.psql` and run a simple query to check the version:
+
+```psql
+postgres=# select version();
+                                                       version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 15.14 (Debian 15.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+```
+
+### Checking duckdb and dlt installation
+
+```bash
+duckdb --version # check duckdb installation
+dlt --version # check dlt installation
+```
 
 ### Postgres database connection settings from inside the devcontainer
 

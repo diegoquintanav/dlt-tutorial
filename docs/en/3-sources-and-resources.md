@@ -1,4 +1,4 @@
-# Part 1: Using `resources` and `sources` to structure data extraction
+# Using `resources` and `sources` to structure data extraction
 
 In the previous part, we saw a simple example of using `dlt` to load data into a `duckdb` database. While that example was straightforward, we can do better.
 

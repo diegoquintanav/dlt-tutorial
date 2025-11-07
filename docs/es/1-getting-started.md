@@ -94,9 +94,38 @@ Necesitarás esta cadena de conexión, y veremos cómo usarla en las siguientes 
 Se proporciona un devcontainer para este tutorial. Si estás usando VSCode _y_ tienes docker instalado, puedes abrir esta carpeta en un _devcontainer_ y tener todo configurado para ti.
 Ver <https://code.visualstudio.com/docs/devcontainers/containers> para más información sobre devcontainers.
 
-## Usando GitHub Codespaces
+## Usando un entorno de Codespaces
 
-Si no quieres configurar nada localmente, puedes usar GitHub Codespaces para ejecutar este tutorial íntegramente en la nube. Simplemente haz un fork de este repositorio y ábrelo en un nuevo Codespace.
+Haz un fork de este repositorio en tu cuenta de GitHub. Luego puedes crear un Codespace directamente desde la interfaz web de GitHub haciendo clic en el botón verde "Code" y seleccionando "Open with Codespaces" > "New codespace".
+
+Espera a que el Codespace se cree e inicialice. Esto puede tardar unos minutos.
+
+Una vez que el Codespace esté listo, abre una terminal y ejecuta los siguientes comandos para asegurarte de que todas las dependencias estén instaladas:
+
+### Comprobando la conexión a Postgres
+
+```bash
+bash # iniciar un shell bash
+ping postgres # probar conectividad con el servicio Postgres
+^C # detener el comando ping con Ctrl+C
+```
+
+Abre una sesión `psql` a la base de datos Postgres con `make postgres.<devcontainer|host>.psql` y ejecuta una consulta simple para comprobar la versión:
+
+```psql
+postgres=# select version();
+                             version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 15.14 (Debian 15.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+```
+
+### Comprobando la instalación de duckdb y dlt
+
+```bash
+duckdb --version # comprobar instalación de duckdb
+dlt --version # comprobar instalación de dlt
+```
 
 ### Configuración de conexión a base de datos Postgres desde dentro del devcontainer
 
