@@ -42,10 +42,7 @@ marp: true
 - Ingeniero eléctrico que trabaja con Python y datos
 - Apasionado por los datos, la energía, la sostenibilidad y los idiomas
 - Actualmente trabajo como ingeniero de datos en energía renovable
-- Algunos enlaces para encontrarme:
-  - <https://linksta.cc/@diegoquintana>
-  - <https://diegoquintanav.github.io/pages/about-EN.html>
-
+- Para encontrarme <https://linksta.cc/@diegoquintana>
 ![bg left](img/piccoro.jpeg)
 
 ---

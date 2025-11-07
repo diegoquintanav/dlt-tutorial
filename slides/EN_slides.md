@@ -41,9 +41,7 @@ marp: true
 - Electrical Engineer working with Python and Data
 - Passionate about Data, Energy, Sustainability and Languages
 - Currently working as a Data Engineer in Green Energy
-- Some links to find me:
-  - <https://linksta.cc/@diegoquintana>
-  - <https://diegoquintanav.github.io/pages/about-EN.html>
+- Find me at <https://linksta.cc/@diegoquintana>
 
 ![bg left](img/piccoro.jpeg)
 
